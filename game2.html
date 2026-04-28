@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SECTOR REVEAL</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #000;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      display: block;
+    }
+
+    /* ── CORNER BUTTONS ── */
+    #starsHud {
+      position: fixed;
+      top: 18px;
+      right: 22px;
+      z-index: 20;
+      pointer-events: none;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: #ffdd44;
+      text-shadow: 0 0 12px #ffdd44;
+    }
+
+    #muteBtn,
+    #achBtn {
+      position: fixed;
+      z-index: 30;
+      background: transparent;
+      font-family: 'Orbitron', sans-serif;
+      cursor: pointer;
+      transition: all .15s;
+      border: 1px solid rgba(0, 255, 255, .22);
+      color: rgba(0, 255, 255, .5);
+      padding: 5px 9px;
+      font-size: 10px;
+    }
+
+    #muteBtn {
+      top: 16px;
+      right: 110px;
+      letter-spacing: 1px;
+    }
+
+    #achBtn {
+      top: 16px;
+      left: 22px;
+      letter-spacing: 2px;
+    }
+
+    #muteBtn:hover,
+    #achBtn:hover {
+      border-color: rgba(0, 255, 255, .65);
+      color: #00ffff;
+    }
+
+    /* ── ACHIEVEMENT TOAST ── */
+    #achToast {
+      position: fixed;
+      top: 66px;
+      right: -290px;
+      z-index: 90;
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      background: rgba(0, 12, 32, .96);
+      border: 1px solid rgba(255, 221, 68, .45);
+      border-left: 3px solid #ffdd44;
+      padding: 11px 15px;
+      width: 275px;
+      transition: right .45s cubic-bezier(.16, 1, .3, 1);
+      pointer-events: none;
+    }
+
+    #achToast.show {
+      right: 16px;
+    }
+
+    #achToastIcon {
+      font-size: 26px;
+      flex-shrink: 0;
+    }
+
+    #achToastLabel {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 7px;
+      letter-spacing: 3px;
+      color: rgba(255, 221, 68, .55);
+    }
+
+    #achToastTitle {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: #ffdd44;
+      margin-top: 2px;
+    }
+
+    #achToastDesc {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 7px;
+      letter-spacing: 1px;
+      color: rgba(0, 200, 255, .5);
+      margin-top: 3px;
+    }
+
+    /* ── ACHIEVEMENT MODAL ── */
+    #achModal {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      background: rgba(0, 4, 18, .96);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .3s;
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    #achModal.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    #achModalTitle {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: 10px;
+      color: #ffdd44;
+      text-shadow: 0 0 20px #ffdd44;
+    }
+
+    #achModalSub {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 8px;
+      letter-spacing: 5px;
+      color: rgba(0, 200, 255, .4);
+      margin-top: -12px;
+    }
+
+    #achModalGrid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      max-width: 750px;
+      width: 100%;
+    }
+
+    @media(max-width:700px) {
+      #achModalGrid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    @media(max-width:500px) {
+      #achModalGrid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .acard {
+      border: 1px solid rgba(0, 255, 255, .12);
+      background: rgba(0, 12, 30, .85);
+      padding: 10px 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      text-align: center;
+    }
+
+    .acard.done {
+      border-color: rgba(255, 221, 68, .45);
+      background: rgba(20, 12, 0, .9);
+    }
+
+    .acard-icon {
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .acard-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 6px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: #ffdd44;
+    }
+
+    .acard.done .acard-title {
+      color: #ffdd44;
+    }
+
+    .acard:not(.done) .acard-title {
+      color: rgba(0, 200, 255, .35);
+    }
+
+    .acard-desc {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 5.5px;
+      letter-spacing: .5px;
+      color: rgba(0, 200, 255, .35);
+    }
+
+    .acard.done .acard-desc {
+      color: rgba(0, 220, 255, .5);
+    }
+
+    #achCloseBtn {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 10px;
+      letter-spacing: 4px;
+      color: #ff44ff;
+      background: transparent;
+      border: 2px solid #ff44ff;
+      padding: 10px 24px;
+      cursor: pointer;
+      text-shadow: 0 0 8px #ff44ff;
+      transition: all .2s;
+    }
+
+    #achCloseBtn:hover {
+      background: rgba(255, 68, 255, .1);
+    }
+
+    /* ── SELECTOR ── */
+    #selector {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      background: rgba(0, 4, 18, .97);
+      transition: opacity .4s;
+    }
+
+    #selector.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #sel-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(12px, 2.5vw, 20px);
+      font-weight: 900;
+      letter-spacing: 10px;
+      color: #00ffff;
+      text-shadow: 0 0 20px #00ffff;
+    }
+
+    #sel-sub {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 8px;
+      letter-spacing: 6px;
+      color: rgba(0, 200, 255, .35);
+      margin-top: -14px;
+    }
+
+    #sel-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 148px);
+      gap: 10px;
+    }
+
+    @media(max-width:680px) {
+      #sel-grid {
+        grid-template-columns: repeat(2, 148px);
+      }
+    }
+
+    .sel-card {
+      width: 148px;
+      height: 118px;
+      border: 1px solid rgba(0, 255, 255, .15);
+      background: rgba(0, 12, 30, .88);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      cursor: pointer;
+      transition: all .18s;
+    }
+
+    .sel-card:hover:not(.locked) {
+      border-color: rgba(0, 255, 255, .55);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(0, 255, 255, .12);
+    }
+
+    .sel-card.locked {
+      opacity: .28;
+      cursor: not-allowed;
+      filter: grayscale(.7);
+    }
+
+    .sel-card.done {
+      border-color: rgba(0, 255, 140, .35);
+    }
+
+    .sel-lv {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 7px;
+      letter-spacing: 4px;
+      color: rgba(0, 200, 255, .45);
+    }
+
+    .sel-name {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 7px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: rgba(0, 220, 255, .8);
+      text-align: center;
+      padding: 0 6px;
+    }
+
+    .sel-badge {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 6px;
+      letter-spacing: 2px;
+      color: rgba(0, 255, 120, .5);
+    }
+
+    .sel-card.done .sel-badge {
+      color: #00ff88;
+    }
+
+    /* ── HUD ── */
+    #hud {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      pointer-events: none;
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    #hudTitle {
+      color: rgba(0, 220, 255, .35);
+      font-size: 8px;
+      letter-spacing: 8px;
+    }
+
+    #sectorLabel {
+      color: var(--hcol, #00ffff);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 5px;
+      text-shadow: 0 0 12px var(--hcol, #00ffff);
+      margin-top: 6px;
+      min-height: 18px;
+    }
+
+    #progressTrack {
+      width: 250px;
+      height: 2px;
+      background: rgba(0, 255, 255, .1);
+      border: 1px solid rgba(0, 255, 255, .2);
+      margin: 8px auto 6px;
+    }
+
+    #progressFill {
+      height: 100%;
+      width: 0%;
+      transition: width .06s;
+    }
+
+    #indicators {
+      color: rgba(0, 200, 255, .38);
+      font-size: 10px;
+      letter-spacing: 5px;
+    }
+
+    /* ── FLASK CTRL ── */
+    #flaskCtrl {
+      position: fixed;
+      bottom: 108px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      z-index: 10;
+    }
+
+    #flaskTopRow {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    #flaskTotalInfo {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 8px;
+      letter-spacing: 3px;
+      color: rgba(0, 200, 255, .5);
+    }
+
+    #flaskHint {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 6px;
+      letter-spacing: 3px;
+      color: rgba(0, 150, 200, .28);
+    }
+
+    #buyFlaskBtn {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 9px;
+      letter-spacing: 3px;
+      color: #00ffff;
+      background: transparent;
+      border: 1px solid rgba(0, 255, 255, .3);
+      padding: 6px 12px;
+      cursor: pointer;
+      text-shadow: 0 0 8px #00ffff;
+      transition: all .15s;
+    }
+
+    #buyFlaskBtn:hover:not(:disabled) {
+      border-color: #00ffff;
+      box-shadow: 0 0 20px rgba(0, 255, 255, .38);
+    }
+
+    #buyFlaskBtn:disabled {
+      opacity: .22;
+      cursor: not-allowed;
+    }
+
+    /* ── PANEL ── */
+    #panel {
+      position: fixed;
+      bottom: 22px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 9px;
+    }
+
+    #chargeBtn {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: 8px;
+      color: var(--hcol, #00ffff);
+      background: transparent;
+      border: 2px solid var(--hcol, #00ffff);
+      padding: 12px 42px;
+      cursor: pointer;
+      text-shadow: 0 0 10px var(--hcol, #00ffff);
+      box-shadow: 0 0 22px rgba(0, 255, 255, .15), inset 0 0 18px rgba(0, 255, 255, .03);
+      transition: all .1s;
+      outline: none;
+      position: relative;
+    }
+
+    #chargeBtn::before {
+      content: '';
+      position: absolute;
+      inset: -5px;
+      border: 1px solid rgba(0, 255, 255, .1);
+      pointer-events: none;
+    }
+
+    #chargeBtn:hover {
+      box-shadow: 0 0 46px rgba(0, 255, 255, .4), inset 0 0 24px rgba(0, 255, 255, .07);
+    }
+
+    #chargeBtn.active {
+      transform: scale(.965);
+      background: rgba(0, 255, 255, .09);
+      box-shadow: 0 0 75px rgba(0, 255, 255, .65), inset 0 0 32px rgba(0, 255, 255, .12);
+    }
+
+    #hint {
+      color: rgba(0, 200, 255, .2);
+      font-family: 'Orbitron', sans-serif;
+      font-size: 7px;
+      letter-spacing: 5px;
+    }
+
+    /* ── WIN ── */
+    #win {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: rgba(0, 4, 18, .93);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 1s;
+      z-index: 40;
+    }
+
+    #win.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    #winEmoji {
+      font-size: 52px;
+      animation: wBob 2s ease-in-out infinite;
+    }
+
+    #winTitle {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(15px, 3.5vw, 32px);
+      font-weight: 900;
+      color: var(--hcol, #00ffff);
+      letter-spacing: 8px;
+      text-shadow: 0 0 30px var(--hcol, #00ffff);
+      animation: wPulse 2.2s ease-in-out infinite;
+    }
+
+    #winSub {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 10px;
+      color: rgba(0, 255, 255, .45);
+      letter-spacing: 4px;
+    }
+
+    #winBtns {
+      display: flex;
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .wBtn {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      color: #ff44ff;
+      background: transparent;
+      border: 2px solid #ff44ff;
+      padding: 10px 20px;
+      cursor: pointer;
+      text-shadow: 0 0 8px #ff44ff;
+      box-shadow: 0 0 16px rgba(255, 68, 255, .2);
+      transition: all .2s;
+    }
+
+    .wBtn:hover {
+      background: rgba(255, 68, 255, .1);
+      box-shadow: 0 0 36px rgba(255, 68, 255, .5);
+    }
+
+    .wBtn.next {
+      color: #00ffff;
+      border-color: #00ffff;
+      text-shadow: 0 0 8px #00ffff;
+      box-shadow: 0 0 16px rgba(0, 255, 255, .2);
+    }
+
+    .wBtn.next:hover {
+      background: rgba(0, 255, 255, .1);
+      box-shadow: 0 0 36px rgba(0, 255, 255, .5);
+    }
+
+    @keyframes wBob {
+
+      0%,
+      100% {
+        transform: translateY(0)
+      }
+
+      50% {
+        transform: translateY(-8px)
+      }
+    }
+
+    @keyframes wPulse {
+
+      0%,
+      100% {
+        opacity: .85
+      }
+
+      50% {
+        opacity: 1;
+        filter: brightness(1.3)
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="c"></canvas>
+  <div id="starsHud">⭐ <span id="starsCount">0</span></div>
+  <button id="muteBtn">🔊</button>
+  <button id="achBtn">🏆 0/20</button>
+
+  <!-- Achievement toast -->
+  <div id="achToast">
+    <div id="achToastIcon">🏆</div>
+    <div>
+      <div id="achToastLabel">ACHIEVEMENT UNLOCKED</div>
+      <div id="achToastTitle"></div>
+      <div id="achToastDesc"></div>
+    </div>
+  </div>
+
+  <!-- Achievement modal -->
+  <div id="achModal">
+    <div id="achModalTitle">ACHIEVEMENTS</div>
+    <div id="achModalSub">TACTICAL HONOURS</div>
+    <div id="achModalGrid"></div>
+    <button id="achCloseBtn" onclick="closeAchModal()">◀ CLOSE</button>
+  </div>
+
+  <!-- Selector -->
+  <div id="selector">
+    <div id="sel-title">SELECT MISSION</div>
+    <div id="sel-sub">TACTICAL RESTORATION UNIT</div>
+    <div id="sel-grid"></div>
+  </div>
+
+  <!-- HUD -->
+  <div id="hud">
+    <div id="hudTitle">TACTICAL RESTORATION UNIT</div>
+    <div id="sectorLabel">INITIALIZING</div>
+    <div id="progressTrack">
+      <div id="progressFill"></div>
+    </div>
+    <div id="indicators"></div>
+  </div>
+
+  <!-- Flask controls -->
+  <div id="flaskCtrl">
+    <div id="flaskTopRow">
+      <span id="flaskTotalInfo">AUTO: 0.5/s</span>
+      <button id="buyFlaskBtn">⊕ FLASK #2 · 3⭐</button>
+    </div>
+    <div id="flaskHint">CLICK FLASK TO UPGRADE</div>
+  </div>
+
+  <!-- Charge panel -->
+  <div id="panel">
+    <button id="chargeBtn" style="white-space: nowrap;">⚡ CHARGE ⚡</button>
+    <div id="hint">CLICK · HOLD · FLASK AUTO-FIRES</div>
+  </div>
+
+  <!-- Win screen -->
+  <div id="win">
+    <div id="winEmoji"></div>
+    <div id="winTitle">MISSION COMPLETE</div>
+    <div id="winSub"></div>
+    <div id="winBtns">
+      <button class="wBtn" onclick="showSelector()">◀ SELECT</button>
+      <button class="wBtn next" id="nextBtn" onclick="nextLevel()">NEXT ▶</button>
+    </div>
+  </div>
+
+  <script>
+    'use strict';
+    // ─── CANVAS ──────────────────────────────────────────────────────────────────
+    const canvas = document.getElementById('c');
+    const ctx = canvas.getContext('2d', { alpha: false });
+    let W, H;
+    function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; rebuildPolys(); initStarField(); }
+    window.addEventListener('resize', resize);
+    const SCX = () => W * .5, SCY = () => H * .37; // slightly higher for bigger flasks
+    const rand = (a, b) => a + Math.random() * (b - a);
+    const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+    function hexRGB(h) { return [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)]; }
+
+    // ─── AUDIO ───────────────────────────────────────────────────────────────────
+    let audioCtx = null, masterGain = null, muted = false, bgTimer = null, lastAutoSnd = 0;
+    const PENTA = [130.81, 146.83, 164.81, 196, 220, 261.63, 293.66, 329.63, 392, 440];
+    function initAudio() { if (audioCtx) return; try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); masterGain = audioCtx.createGain(); masterGain.gain.value = muted ? 0 : .5; masterGain.connect(audioCtx.destination); schedBg(); } catch (e) { } }
+    function tone(f, d, v, t = 'sine', delay = 0) { if (!audioCtx || muted) return; const now = audioCtx.currentTime + delay, o = audioCtx.createOscillator(), g = audioCtx.createGain(); o.type = t; o.frequency.value = f; g.gain.setValueAtTime(0, now); g.gain.linearRampToValueAtTime(v, now + Math.min(.07, d * .3)); g.gain.exponentialRampToValueAtTime(.0001, now + d); o.connect(g); g.connect(masterGain); o.start(now); o.stop(now + d + .05); }
+    function schedBg() { if (!audioCtx) return; const f = PENTA[Math.floor(Math.random() * PENTA.length)], now = audioCtx.currentTime, o = audioCtx.createOscillator(), g = audioCtx.createGain(), flt = audioCtx.createBiquadFilter(); o.type = 'triangle'; o.frequency.value = f; flt.type = 'lowpass'; flt.frequency.value = 480; g.gain.setValueAtTime(0, now); g.gain.linearRampToValueAtTime(muted ? 0 : .016, now + 2.2); g.gain.linearRampToValueAtTime(0, now + 7.5); o.connect(flt); flt.connect(g); g.connect(masterGain); o.start(now); o.stop(now + 8.2); if (Math.random() > .55) tone(f * 1.5, 4.5, .007, 'sine', 1.2); bgTimer = setTimeout(schedBg, rand(2700, 5500)); }
+    function sndClick() { tone(880, .13, .038, 'sine'); tone(660, .09, .022, 'sine', .05); }
+    function sndAutoTick(ts) { if (!audioCtx || ts - lastAutoSnd < 2500) return; lastAutoSnd = ts; tone(PENTA[Math.floor(Math.random() * PENTA.length)] * 2, .08, .012, 'sine'); }
+    function sndReveal(i) { const r = PENTA[i % PENTA.length] * 2;[1, 1.25, 1.5, 2].forEach((x, j) => tone(r * x, 2.1, .06 / (j + 1), 'sine', j * .07)); for (let k = 0; k < 4; k++)tone(r * (2 + k * .5), .2, .016, 'sine', .14 + k * .06); }
+    function sndUpgrade() { [261.63, 329.63, 392, 523.25].forEach((f, i) => tone(f, .8, .05, 'triangle', i * .09)); }
+    function sndAchieve() { [392, 523.25, 659.25, 783.99].forEach((f, i) => tone(f, 1, .07, 'sine', i * .08)); }
+    function sndStars() { tone(1318.5, .17, .045, 'sine'); tone(1568, .14, .036, 'sine', .09); }
+
+    document.getElementById('muteBtn').addEventListener('click', () => { initAudio(); muted = !muted; if (masterGain) masterGain.gain.value = muted ? 0 : .5; document.getElementById('muteBtn').textContent = muted ? '🔇' : '🔊'; });
+
+    // ─── FLASK SYSTEM: 20 upgrade levels ─────────────────────────────────────────
+    const FLASK_NAMES = ['CRUDE', 'GLASS', 'TINTED', 'CRYSTAL', 'REFINED', 'ARCANE', 'MYSTIC', 'VOID', 'PLASMA', 'QUANTUM', 'FLUX', 'NEXUS', 'PRIME', 'OMEGA', 'APEX', 'ULTRA', 'HYPER', 'MEGA', 'GIGA', '∞'];
+    const FLASK_RATES = [.5, 1, 1.5, 2.2, 3, 4, 5.5, 7, 9, 12, 15, 18, 22, 27, 32, 38, 45, 52, 60, 75];
+    const FLASK_COSTS = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, null]; // nextCost
+    const FLASK_UPS = FLASK_NAMES.map((name, i) => ({ name: name + ' FLASK', rate: FLASK_RATES[i], nextCost: FLASK_COSTS[i] }));
+
+    // 10 max flasks, add cost maxes at 5 stars
+    const FLASK_ADD_COSTS = [3, 4, 4, 5, 5, 5, 5, 5, 5]; // cost to add flask #2 through #10
+
+    // 20 unique colors for 20 flask levels
+    const FLASK_COLS = ['#00ccff', '#22ddff', '#44eeff', '#88ffee', '#aaffcc', '#8844ff', '#aa22ff', '#cc00ff', '#ff44ff', '#ff2288', '#ff0066', '#ff4400', '#ff8800', '#ffcc00', '#eeff00', '#aeff00', '#44ff22', '#00ff88', '#00ffcc', '#ffffff'];
+
+    // Flask geometry — 2× bigger than previous
+    const FW = 26, FH = 84, FNW = 10, FNH = 34, F_STRIDE = 62;
+
+    function flaskBY() { return H - 200; }
+    function flaskTopY() { return flaskBY() - FH - FNH; }
+    function flaskCX(i) { const n = flasks.length, rowW = n * F_STRIDE - 12; return W * .5 - rowW * .5 + FW + i * F_STRIDE; }
+
+    let flasks = [];
+
+    // ─── ACHIEVEMENTS ─────────────────────────────────────────────────────────────
+    const ACHIEVEMENTS = [
+      { id: 'f1', icon: '✨', title: 'FIRST SPARK', desc: 'Fire your first particle', check: s => s.particlesFired >= 1 },
+      { id: 'f2', icon: '🔥', title: 'WARMING UP', desc: 'Fire 100 particles', check: s => s.particlesFired >= 100 },
+      { id: 'f3', icon: '⚡', title: 'PARTICLE STORM', desc: 'Fire 1,000 particles', check: s => s.particlesFired >= 1000 },
+      { id: 'f4', icon: '💥', title: 'UNSTOPPABLE', desc: 'Fire 10,000 particles total', check: s => s.particlesFired >= 10000 },
+      { id: 's1', icon: '🌟', title: 'FIRST REVEAL', desc: 'Reveal your first sector', check: s => s.sectorsRevealed >= 1 },
+      { id: 's2', icon: '🎯', title: 'CLEARING PATH', desc: 'Reveal 10 sectors', check: s => s.sectorsRevealed >= 10 },
+      { id: 's3', icon: '🏆', title: 'SHAPE MASTER', desc: 'Reveal 50 sectors total', check: s => s.sectorsRevealed >= 50 },
+      { id: 's4', icon: '🌌', title: 'COSMIC RESTORER', desc: 'Reveal 100 sectors total', check: s => s.sectorsRevealed >= 100 },
+      { id: 'l1', icon: '🚀', title: 'FIRST MISSION', desc: 'Complete your first level', check: s => s.levelsCompleted >= 1 },
+      { id: 'l2', icon: '⭐', title: 'SEASONED', desc: 'Complete 4 different levels', check: s => s.levelsCompleted >= 4 },
+      { id: 'l3', icon: '👑', title: 'ALL CLEAR', desc: 'Complete all 8 levels', check: s => s.levelsCompleted >= 8 },
+      { id: 'fl1', icon: '⚗️', title: 'FLASK APPRENTICE', desc: 'Own 2 flasks', check: s => s.flaskCount >= 2 },
+      { id: 'fl2', icon: '🧪', title: 'FLASK COLLECTOR', desc: 'Own 5 flasks', check: s => s.flaskCount >= 5 },
+      { id: 'fl3', icon: '🏭', title: 'FLASK EMPIRE', desc: 'Own all 10 flasks', check: s => s.flaskCount >= 10 },
+      { id: 'u1', icon: '⬆️', title: 'FIRST UPGRADE', desc: 'Upgrade any flask', check: s => s.upgradesPerformed >= 1 },
+      { id: 'u2', icon: '💪', title: 'POWER SURGE', desc: 'Upgrade a flask to level 5', check: s => s.maxFlaskLevel >= 4 },
+      { id: 'u3', icon: '🔮', title: 'ALCHEMIST', desc: 'Upgrade a flask to level 10', check: s => s.maxFlaskLevel >= 9 },
+      { id: 'u4', icon: '∞', title: 'INFINITE POWER', desc: 'Max a flask to level 20', check: s => s.maxFlaskLevel >= 19 },
+      { id: 'st1', icon: '💰', title: 'STAR COLLECTOR', desc: 'Earn 100 stars total', check: s => s.totalStarsEarned >= 100 },
+      { id: 'sp1', icon: '🤖', title: 'SPEED DEMON', desc: 'Reach 100 particles/sec auto rate', check: s => s.maxAutoRate >= 100 },
+    ];
+
+    let stats = { particlesFired: 0, autoParticlesFired: 0, sectorsRevealed: 0, levelsCompleted: 0, upgradesPerformed: 0, totalStarsEarned: 0 };
+    let unlockedAchievements = new Set();
+    let achQueue = [], achToastTimer = null;
+
+    function checkAchievements() {
+      const s = { ...stats, flaskCount: flasks.length, maxFlaskLevel: flasks.reduce((m, f) => Math.max(m, f.level), 0), maxAutoRate: flasks.reduce((t, f) => t + FLASK_UPS[f.level].rate, 0) };
+      for (const a of ACHIEVEMENTS) {
+        if (unlockedAchievements.has(a.id)) continue;
+        if (a.check(s)) { unlockedAchievements.add(a.id); achQueue.push(a); savePlayer(); if (sectors) addFloat(a.icon, SCX(), SCY() - 80, '#ffdd44'); }
+      }
+      updateAchBtn();
+      if (!achToastTimer && achQueue.length) processAchQueue();
+    }
+
+    function processAchQueue() {
+      if (!achQueue.length) { achToastTimer = null; return; }
+      const a = achQueue.shift();
+      const t = document.getElementById('achToast');
+      document.getElementById('achToastIcon').textContent = a.icon;
+      document.getElementById('achToastTitle').textContent = a.title;
+      document.getElementById('achToastDesc').textContent = a.desc;
+      t.classList.add('show'); sndAchieve();
+      achToastTimer = setTimeout(() => { t.classList.remove('show'); achToastTimer = setTimeout(processAchQueue, 500); }, 3200);
+    }
+
+    function updateAchBtn() { document.getElementById('achBtn').textContent = `🏆 ${unlockedAchievements.size}/20`; }
+
+    function openAchModal() {
+      const grid = document.getElementById('achModalGrid'); grid.innerHTML = '';
+      for (const a of ACHIEVEMENTS) {
+        const done = unlockedAchievements.has(a.id);
+        const d = document.createElement('div'); d.className = 'acard' + (done ? ' done' : '');
+        d.innerHTML = `<div class="acard-icon">${done ? a.icon : '🔒'}</div><div class="acard-title">${a.title}</div><div class="acard-desc">${done ? a.desc : '???'}</div>`;
+        grid.appendChild(d);
+      }
+      document.getElementById('achModal').classList.add('show');
+    }
+    function closeAchModal() { document.getElementById('achModal').classList.remove('show'); }
+    document.getElementById('achBtn').addEventListener('click', () => { initAudio(); openAchModal(); });
+    document.getElementById('achModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeAchModal(); });
+
+    // ─── PERSISTENCE ─────────────────────────────────────────────────────────────
+    let stars = 0;
+    function loadRaw() { try { return JSON.parse(localStorage.getItem('sr4_data') || '{}'); } catch { return {}; } }
+    function saveRaw(d) { try { localStorage.setItem('sr4_data', JSON.stringify(d)); } catch { } }
+    function loadProg() { try { return JSON.parse(localStorage.getItem('sr4_prog') || '{"done":[]}'); } catch { return { done: [] }; } }
+    function saveProg(p) { try { localStorage.setItem('sr4_prog', JSON.stringify(p)); } catch { } }
+    function isUnlocked(i) { if (i === 0) return true; const p = loadProg(); return p.done && p.done.includes(i - 1); }
+    function isDone(i) { const p = loadProg(); return p.done && p.done.includes(i); }
+    function markDone(i) { const p = loadProg(); if (!p.done) p.done = []; if (!p.done.includes(i)) { p.done.push(i); stats.levelsCompleted = p.done.length; } saveProg(p); }
+
+    function loadPlayer() {
+      const d = loadRaw();
+      stars = d.stars || 0;
+      stats = Object.assign({ particlesFired: 0, autoParticlesFired: 0, sectorsRevealed: 0, levelsCompleted: 0, upgradesPerformed: 0, totalStarsEarned: 0 }, d.stats || {});
+      unlockedAchievements = new Set(d.achs || []);
+      const sf = d.flasks || [{ level: 0 }];
+      flasks = sf.map(f => ({ level: Math.min(f.level || 0, FLASK_UPS.length - 1), accum: 0, innerP: [], emitGlow: 0, flash: 0, pulse: rand(0, Math.PI * 2) }));
+    }
+    function savePlayer() { const d = loadRaw(); d.stars = stars; d.stats = stats; d.achs = [...unlockedAchievements]; d.flasks = flasks.map(f => ({ level: f.level })); saveRaw(d); }
+    loadPlayer();
+
+    // ─── FLOAT TEXTS ─────────────────────────────────────────────────────────────
+    const floatTexts = [];
+    function addFloat(text, x, y, col = '#ffdd44') { floatTexts.push({ text, x, y, alpha: 1, vy: -1.1, col }); }
+
+    // ─── CURRENCY ────────────────────────────────────────────────────────────────
+    const STARS_PER_REVEAL = 20;
+    function awardStars(n, x, y) {
+      stars += n; stats.totalStarsEarned += n; savePlayer();
+      document.getElementById('starsCount').textContent = stars;
+      updateFlaskUI(); addFloat(`+${n} ⭐`, x, y); sndStars();
+      checkAchievements();
+    }
+
+    // ─── FLASK UI ────────────────────────────────────────────────────────────────
+    function updateFlaskUI() {
+      if (!flasks.length) return;
+      const totalRate = flasks.reduce((s, f) => s + FLASK_UPS[f.level].rate, 0);
+      document.getElementById('flaskTotalInfo').textContent = `AUTO: ${totalRate.toFixed(1)}/s`;
+      const btn = document.getElementById('buyFlaskBtn');
+      if (flasks.length >= 10) { btn.style.display = 'none'; }
+      else { const cost = FLASK_ADD_COSTS[flasks.length - 1]; btn.textContent = `⊕ FLASK #${flasks.length + 1} · ${cost}⭐`; btn.disabled = stars < cost; btn.style.display = ''; }
+    }
+
+    document.getElementById('buyFlaskBtn').addEventListener('click', () => {
+      initAudio();
+      if (flasks.length >= 10) return;
+      const cost = FLASK_ADD_COSTS[flasks.length - 1];
+      if (stars < cost) { addFloat(`NEED ${cost}⭐`, W * .5, flaskTopY() - 20, '#ff4444'); return; }
+      stars -= cost;
+      flasks.push({ level: 0, accum: 0, innerP: [], emitGlow: 0, flash: 0, pulse: rand(0, Math.PI * 2) });
+      initAllFlaskInner(); savePlayer();
+      document.getElementById('starsCount').textContent = stars;
+      updateFlaskUI(); sndUpgrade();
+      addFloat(`FLASK #${flasks.length} ONLINE!`, W * .5, flaskTopY() - 26, '#00ffff');
+      checkAchievements();
+    });
+
+    function upgradeFlask(idx) {
+      const f = flasks[idx], curr = FLASK_UPS[f.level];
+      if (!curr.nextCost) { addFloat('MAX LV!', flaskCX(idx), flaskTopY() - 22, FLASK_COLS[f.level]); return; }
+      if (stars < curr.nextCost) { addFloat(`NEED ${curr.nextCost}⭐`, flaskCX(idx), flaskTopY() - 22, '#ff4444'); return; }
+      stars -= curr.nextCost; f.level++; f.flash = 1; stats.upgradesPerformed++;
+      savePlayer(); document.getElementById('starsCount').textContent = stars;
+      updateFlaskUI(); sndUpgrade();
+      addFloat(`LV.${f.level + 1}!`, flaskCX(idx), flaskTopY() - 22, '#ffdd44');
+      checkAchievements();
+    }
+
+    // ─── FLASK INNER PARTICLES ───────────────────────────────────────────────────
+    function initFlaskInner(i) {
+      const f = flasks[i], bx = flaskCX(i), by = flaskBY();
+      f.innerP = []; const max = Math.min(3 + f.level, 14);
+      for (let k = 0; k < max; k++)f.innerP.push({ x: bx + rand(-FW * .7, FW * .7), y: by - rand(5, FH - 5), vx: rand(-.8, .8), vy: rand(-.8, .8), colIdx: Math.floor(rand(0, Math.max(1, levelPCols.length))), sz: rand(1, 2.2) });
+    }
+    function initAllFlaskInner() { for (let i = 0; i < flasks.length; i++)initFlaskInner(i); }
+
+    function updateFlaskInner(i, dt) {
+      const f = flasks[i], bx = flaskCX(i), by = flaskBY();
+      const max = Math.min(3 + f.level, 14);
+      for (const p of f.innerP) {
+        p.x += p.vx * dt; p.y += p.vy * dt;
+        if (p.x < bx - FW + 3) p.vx = Math.abs(p.vx); if (p.x > bx + FW - 3) p.vx = -Math.abs(p.vx);
+        if (p.y < by - FH + 3) p.vy = Math.abs(p.vy); if (p.y > by - 3) p.vy = -Math.abs(p.vy);
+        p.vx += rand(-.05, .05); p.vy += rand(-.05, .05);
+        const sp = Math.sqrt(p.vx * p.vx + p.vy * p.vy); if (sp > 1.8) { p.vx *= 1.8 / sp; p.vy *= 1.8 / sp; }
+        if (Math.random() < .003) p.colIdx = Math.floor(rand(0, Math.max(1, levelPCols.length)));
+      }
+      while (f.innerP.length < max) f.innerP.push({ x: bx + rand(-FW * .7, FW * .7), y: by - rand(5, FH - 5), vx: rand(-.8, .8), vy: rand(-.8, .8), colIdx: Math.floor(rand(0, Math.max(1, levelPCols.length))), sz: rand(1, 2.2) });
+      if (f.innerP.length > max) f.innerP.length = max;
+    }
+
+    // ─── STARFIELD ───────────────────────────────────────────────────────────────
+    const NS = 200;
+    const sX = new Float32Array(NS), sY = new Float32Array(NS), sR = new Float32Array(NS), sPh = new Float32Array(NS), sSpd = new Float32Array(NS), sBa = new Float32Array(NS);
+    function initStarField() { for (let i = 0; i < NS; i++) { sX[i] = rand(0, W); sY[i] = rand(0, H); sR[i] = rand(.2, 1.8); sPh[i] = rand(0, Math.PI * 2); sSpd[i] = rand(.003, .022); sBa[i] = rand(.2, .75); } }
+
+    // ─── PARTICLE POOL ───────────────────────────────────────────────────────────
+    const MAX_P = 600, TMAX = 10;
+    const pSX = new Float32Array(MAX_P), pSY = new Float32Array(MAX_P), pX = new Float32Array(MAX_P), pY = new Float32Array(MAX_P);
+    const pTX = new Float32Array(MAX_P), pTY = new Float32Array(MAX_P), pCPX = new Float32Array(MAX_P), pCPY = new Float32Array(MAX_P);
+    const pT = new Float32Array(MAX_P), pSpd = new Float32Array(MAX_P), pSZ = new Float32Array(MAX_P);
+    const pDead = new Uint8Array(MAX_P), pCI = new Uint8Array(MAX_P), pSI = new Int32Array(MAX_P);
+    const tBuf = new Float32Array(MAX_P * TMAX * 2), tLen = new Uint8Array(MAX_P), tHd = new Uint8Array(MAX_P);
+    let pCount = 0, pAlive = 0;
+    function pushTrail(i, x, y) { const b = i * TMAX * 2, s = tHd[i]; tBuf[b + s * 2] = x; tBuf[b + s * 2 + 1] = y; tHd[i] = (s + 1) % TMAX; if (tLen[i] < TMAX) tLen[i]++; }
+    function allocP() { if (pAlive >= MAX_P) return -1; for (let i = 0; i < pCount; i++)if (pDead[i]) { pDead[i] = 0; tLen[i] = 0; tHd[i] = 0; return i; } if (pCount < MAX_P) { const i = pCount++; pDead[i] = 0; tLen[i] = 0; tHd[i] = 0; return i; } return -1; }
+
+    // ─── LEVELS ──────────────────────────────────────────────────────────────────
+    function pizzaSlices() {
+      const R = 108, names = ['TOMATO SAUCE', 'MOZZARELLA', 'PEPPERONI', 'FRESH BASIL', 'PLUM TOMATO', 'BURRATA', 'STONE CRUST', 'PROSCIUTTO'];
+      const cols = ['#cc3311', '#ffcc33', '#ff6600', '#44aa22', '#cc2211', '#ffdd55', '#884422', '#ff8844'];
+      return Array.from({ length: 8 }, (_, i) => { const a1 = -Math.PI / 2 + i * Math.PI / 4, a2 = a1 + Math.PI / 4, am = (a1 + a2) / 2, r2 = R * 1.02; return { name: names[i], col: cols[i], pts: [[0, 0], [Math.round(R * Math.cos(a1)), Math.round(R * Math.sin(a1))], [Math.round(r2 * Math.cos(am)), Math.round(r2 * Math.sin(am))], [Math.round(R * Math.cos(a2)), Math.round(R * Math.sin(a2))]] }; });
+    }
+    const LEVELS = [
+      {
+        id: 0, name: 'VIPER-7 STARSHIP', icon: '🚀', theme: '#00ffff', pcols: ['#00ffff', '#4488ff', '#ff44ff', '#88aaff', '#ffffff', '#aaddff'], reveal: [7, 6, 5, 0, 1, 2, 3, 4], sectors: [
+          { name: 'PORT WING', pts: [[-38, 8], [-30, -22], [-62, -38], [-108, 10], [-94, 44], [-44, 28]], col: '#ff6622' },
+          { name: 'STBD WING', pts: [[38, 8], [30, -22], [62, -38], [108, 10], [94, 44], [44, 28]], col: '#22dd88' },
+          { name: 'PORT ENGINE', pts: [[-38, 18], [-65, 18], [-65, 74], [-38, 74]], col: '#ffcc00' },
+          { name: 'STBD ENGINE', pts: [[38, 18], [65, 18], [65, 74], [38, 74]], col: '#ff2266' },
+          { name: 'THRUSTER', pts: [[-38, 18], [38, 18], [34, 88], [-34, 88]], col: '#ff8844' },
+          { name: 'MAIN HULL', pts: [[-30, -46], [30, -46], [38, 18], [-38, 18]], col: '#4488ff' },
+          { name: 'COCKPIT', pts: [[-24, -90], [24, -90], [30, -46], [-30, -46]], col: '#cc44ff' },
+          { name: 'NOSE CONE', pts: [[0, -138], [-24, -90], [24, -90]], col: '#00ffff' },
+        ]
+      },
+      { id: 1, name: 'SUPREME PIZZA', icon: '🍕', theme: '#ff6622', pcols: ['#ff4422', '#ffdd33', '#ff8800', '#ff6600', '#ffcc44', '#ff2200'], reveal: [0, 2, 4, 6, 1, 3, 5, 7], sectors: pizzaSlices() },
+      {
+        id: 2, name: 'TROPICAL PINEAPPLE', icon: '🍍', theme: '#33cc55', pcols: ['#22cc44', '#ddbb00', '#44ff66', '#ffdd44', '#22aa33', '#88ff88'], reveal: [7, 5, 6, 3, 4, 1, 2, 0], sectors: [
+          { name: 'BOTTOM TIP', pts: [[-36, 100], [36, 100], [0, 115]], col: '#bb8800' },
+          { name: 'BODY LL', pts: [[-54, 22], [-5, 30], [-5, 85], [-36, 100]], col: '#cc9900' },
+          { name: 'BODY LR', pts: [[54, 22], [5, 30], [5, 85], [36, 100]], col: '#cc9900' },
+          { name: 'BODY UL', pts: [[-58, -5], [-5, -38], [-5, 30], [-54, 22]], col: '#ddbb00' },
+          { name: 'BODY UR', pts: [[58, -5], [5, -38], [5, 30], [54, 22]], col: '#ddbb00' },
+          { name: 'LEFT CROWN', pts: [[-60, -38], [-20, -38], [-28, -120], [-58, -100]], col: '#22aa44' },
+          { name: 'RIGHT CROWN', pts: [[60, -38], [20, -38], [28, -120], [58, -100]], col: '#22aa44' },
+          { name: 'CENTER CROWN', pts: [[-12, -35], [12, -35], [6, -138], [-6, -138]], col: '#33cc55' },
+        ]
+      },
+      {
+        id: 3, name: 'GODZILLA', icon: '🦕', theme: '#44bb22', pcols: ['#44cc22', '#22aa00', '#66ee44', '#88ff44', '#33bb11', '#aaff88'], reveal: [7, 5, 6, 4, 3, 1, 2, 0], sectors: [
+          { name: 'LEGS', pts: [[-44, 100], [44, 100], [55, 138], [18, 138], [0, 118], [-18, 138], [-55, 138]], col: '#2d6420' },
+          { name: 'L ARM', pts: [[-52, 22], [-95, 32], [-90, 88], [-50, 78], [-28, 38]], col: '#2d6420' },
+          { name: 'R ARM', pts: [[52, 22], [95, 32], [90, 88], [50, 78], [28, 38]], col: '#2d6420' },
+          { name: 'BELLY', pts: [[-52, 22], [52, 22], [44, 100], [-44, 100]], col: '#3d7a28' },
+          { name: 'CHEST', pts: [[-65, -40], [65, -40], [52, 22], [-52, 22]], col: '#3d7a28' },
+          { name: 'L JAW', pts: [[-90, -65], [-58, -88], [-65, -40], [-82, -18]], col: '#2a5218' },
+          { name: 'R JAW', pts: [[90, -65], [58, -88], [65, -40], [82, -18]], col: '#2a5218' },
+          { name: 'HEAD', pts: [[-58, -88], [58, -88], [65, -40], [-65, -40]], col: '#336622' },
+        ]
+      },
+      {
+        id: 4, name: 'UNDEAD ZOMBIE', icon: '🧟', theme: '#88aa22', pcols: ['#88bb44', '#cc4488', '#66ee22', '#aabb33', '#ff88bb', '#44cc00'], reveal: [7, 5, 6, 4, 2, 3, 0, 1], sectors: [
+          { name: 'L LEG', pts: [[-55, 72], [-12, 72], [-8, 132], [-55, 132]], col: '#446622' },
+          { name: 'R LEG', pts: [[12, 72], [55, 72], [55, 132], [8, 132]], col: '#446622' },
+          { name: 'L ARM', pts: [[-115, -8], [-62, -28], [-60, 32], [-115, 32]], col: '#66bb33' },
+          { name: 'R ARM', pts: [[115, -8], [62, -28], [60, 32], [115, 32]], col: '#66bb33' },
+          { name: 'TORSO', pts: [[-62, -28], [62, -28], [55, 72], [-55, 72]], col: '#558833' },
+          { name: 'L SKULL', pts: [[-65, -90], [-24, -90], [-30, -52], [-62, -28]], col: '#88aa44' },
+          { name: 'R SKULL', pts: [[65, -90], [24, -90], [30, -52], [62, -28]], col: '#88aa44' },
+          { name: 'BRAIN', pts: [[-24, -90], [24, -90], [30, -52], [-30, -52]], col: '#cc4488' },
+        ]
+      },
+      {
+        id: 5, name: 'PIRATE GALLEON', icon: '🏴‍☠️', theme: '#ff8833', pcols: ['#ff8833', '#ffeeaa', '#cc4422', '#ffcc55', '#ff6600', '#ffffcc'], reveal: [7, 6, 5, 4, 3, 2, 0, 1], sectors: [
+          { name: 'KEEL', pts: [[-72, 75], [72, 75], [52, 98], [-52, 98]], col: '#553311' },
+          { name: 'MAIN HULL', pts: [[-90, 28], [90, 28], [72, 75], [-72, 75]], col: '#884422' },
+          { name: 'BOW', pts: [[-110, -8], [-92, 28], [-72, 75], [-55, 52], [-55, -8]], col: '#774433' },
+          { name: 'STERN', pts: [[92, -8], [92, 28], [72, 75], [55, 52], [55, -8]], col: '#774433' },
+          { name: 'CROW NEST', pts: [[-14, -56], [12, -56], [12, -40], [-14, -40]], col: '#663322' },
+          { name: 'FORE SAIL', pts: [[-62, -55], [-15, -55], [-10, 15], [-65, 15]], col: '#eeeeaa' },
+          { name: 'MAINSAIL', pts: [[-2, -88], [48, -88], [52, 20], [-2, 20]], col: '#ffffcc' },
+          { name: 'JOLLY ROGER', pts: [[12, -88], [42, -88], [42, -68], [12, -68]], col: '#cc2222' },
+        ]
+      },
+      {
+        id: 6, name: 'CLOCK TOWER', icon: '🕰️', theme: '#ffdd44', pcols: ['#ffdd44', '#aaaacc', '#ffffff', '#ffee88', '#88aaff', '#ffcc22'], reveal: [7, 6, 4, 3, 5, 2, 1, 0], sectors: [
+          { name: 'L BASE', pts: [[-62, 85], [-42, 85], [-38, 115], [-62, 115]], col: '#777788' },
+          { name: 'R BASE', pts: [[42, 85], [62, 85], [62, 115], [38, 115]], col: '#777788' },
+          { name: 'TOWER BODY', pts: [[-48, 8], [48, 8], [42, 85], [-42, 85]], col: '#8899aa' },
+          { name: 'L BUTTRESS', pts: [[-55, -58], [-38, -85], [-30, -44], [-48, 8]], col: '#888899' },
+          { name: 'R BUTTRESS', pts: [[55, -58], [38, -85], [30, -44], [48, 8]], col: '#888899' },
+          { name: 'CLOCK FACE', pts: [[-30, -44], [30, -44], [28, 10], [-28, 10]], col: '#ffdd44' },
+          { name: 'BELFRY', pts: [[-38, -85], [38, -85], [32, -44], [-32, -44]], col: '#999aaa' },
+          { name: 'SPIRE', pts: [[-9, -130], [9, -130], [15, -85], [-15, -85]], col: '#aaaacc' },
+        ]
+      },
+      {
+        id: 7, name: 'CAT HEAD', icon: '🐱', theme: '#ff8833', pcols: ['#ff8833', '#ff44aa', '#ffddcc', '#ff9944', '#ffaa55', '#ffbbdd'], reveal: [6, 7, 5, 2, 3, 4, 1, 0], sectors: [
+          { name: 'COLLAR', pts: [[-55, 85], [55, 85], [50, 112], [-50, 112]], col: '#ff44aa' },
+          { name: 'CHIN', pts: [[-50, 40], [50, 40], [40, 85], [-40, 85]], col: '#ffaa44' },
+          { name: 'L FACE', pts: [[-75, -52], [-22, -52], [-20, 30], [-70, 45]], col: '#ff9944' },
+          { name: 'R FACE', pts: [[75, -52], [22, -52], [20, 30], [70, 45]], col: '#ff9944' },
+          { name: 'MUZZLE', pts: [[-22, -5], [22, -5], [18, 40], [-18, 40]], col: '#ffddcc' },
+          { name: 'FOREHEAD', pts: [[-22, -90], [22, -90], [22, -52], [-22, -52]], col: '#ffaa55' },
+          { name: 'L EAR', pts: [[-78, -108], [-22, -90], [-25, -52], [-65, -52]], col: '#ff8833' },
+          { name: 'R EAR', pts: [[78, -108], [22, -90], [25, -52], [65, -52]], col: '#ff8833' },
+        ]
+      },
+    ];
+
+    // ─── GAME STATE ──────────────────────────────────────────────────────────────
+    let sectors, activeRevIdx, gameWon, shakeLeft, shakeAmt, time, currentLvl = 0, levelPCols = [];
+
+    function pip(px, py, poly) { let ins = false; for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) { const [xi, yi] = poly[i], [xj, yj] = poly[j]; if (((yi > py) !== (yj > py)) && (px < (xj - xi) * (py - yi) / (yj - yi) + xi)) ins = !ins; } return ins; }
+
+    function rebuildPolys() {
+      if (!sectors) return;
+      const cx = SCX(), cy = SCY();
+      for (const s of sectors) { s.poly = s.def.pts.map(([rx, ry]) => [cx + rx, cy + ry]); let sx = 0, sy = 0; for (const [x, y] of s.poly) { sx += x; sy += y; } s.cx = sx / s.poly.length; s.cy = sy / s.poly.length; }
+      initAllFlaskInner();
+    }
+
+    function setTheme(col) {
+      document.documentElement.style.setProperty('--hcol', col);
+      document.getElementById('progressFill').style.background = `linear-gradient(90deg,${col},#ff00ff)`;
+      const b = document.getElementById('chargeBtn'); b.style.color = col; b.style.borderColor = col; b.style.textShadow = `0 0 10px ${col}`;
+    }
+
+    function activeSecIdx() { return LEVELS[currentLvl].reveal[activeRevIdx]; }
+
+    function updateHUD() {
+      const lvl = LEVELS[currentLvl], ai = activeSecIdx(), active = sectors && sectors[ai];
+      document.getElementById('hudTitle').textContent = `LV.${String(currentLvl + 1).padStart(2, '0')} · ${lvl.name}`;
+      document.getElementById('sectorLabel').textContent = gameWon ? 'MISSION COMPLETE' : (active && !active.revealed) ? `CHARGING: ${active.def.name}` : 'COMPLETE';
+      document.getElementById('progressFill').style.width = gameWon ? '100%' : (active && !active.revealed) ? `${(active.fill * 100).toFixed(0)}%` : '100%';
+      document.getElementById('indicators').textContent = LEVELS[currentLvl].reveal.map(idx => sectors[idx].revealed ? '▣' : idx === ai && !gameWon ? '▸' : '□').join(' ');
+    }
+
+    function initGame(lvlIdx) {
+      currentLvl = lvlIdx; const lvl = LEVELS[lvlIdx];
+      levelPCols = lvl.pcols.map(hexRGB); setTheme(lvl.theme);
+      sectors = lvl.sectors.map(def => ({ def, fill: 0, revealed: false, flash: 0, pulse: rand(0, Math.PI * 2), innerP: [], rings: [], poly: null, cx: 0, cy: 0, rgb: hexRGB(def.col) }));
+      pDead.fill(1); pCount = 0; pAlive = 0; tLen.fill(0); tHd.fill(0);
+      activeRevIdx = 0; gameWon = false; shakeLeft = 0; shakeAmt = 0; time = 0;
+      for (const f of flasks) f.accum = 0;
+      rebuildPolys();
+      document.getElementById('selector').classList.add('hidden');
+      document.getElementById('win').classList.remove('show');
+      document.getElementById('panel').style.display = 'flex';
+      document.getElementById('flaskCtrl').style.display = 'flex';
+      document.getElementById('starsCount').textContent = stars;
+      updateFlaskUI(); updateHUD(); updateAchBtn();
+    }
+
+    // ─── SPAWN ───────────────────────────────────────────────────────────────────
+    function spawnBurst(n, fx, fy) {
+      if (gameWon || !sectors || activeRevIdx >= LEVELS[currentLvl].reveal.length) return;
+      const sec = sectors[activeSecIdx()], { cx, cy } = sec;
+      for (let k = 0; k < n; k++) {
+        const i = allocP(); if (i < 0) break; pAlive++;
+        const tx = cx + rand(-42, 42), ty = cy + rand(-28, 28), mx = (fx + tx) * .5, my = (fy + ty) * .5;
+        pSX[i] = fx + rand(-12, 12); pSY[i] = fy + rand(-5, 5); pX[i] = pSX[i]; pY[i] = pSY[i];
+        pTX[i] = tx; pTY[i] = ty; pCPX[i] = mx + rand(-190, 190); pCPY[i] = my - rand(80, 200);
+        pT[i] = 0; pSpd[i] = rand(.011, .025); pSZ[i] = rand(1.1, 2.6);
+        pCI[i] = Math.floor(rand(0, Math.max(1, levelPCols.length))); pSI[i] = activeSecIdx(); pDead[i] = 0;
+      }
+      stats.particlesFired += n;
+      if (stats.particlesFired === 1 || stats.particlesFired === 100 || stats.particlesFired === 1000 || stats.particlesFired === 10000) checkAchievements();
+    }
+
+    function updateAutoSpawn(dt, ts) {
+      if (gameWon || !sectors) return;
+      for (let i = 0; i < flasks.length; i++) {
+        const f = flasks[i]; f.accum += (FLASK_UPS[f.level].rate * dt) / 60;
+        const n = Math.floor(f.accum);
+        if (n > 0) { f.accum -= n; f.emitGlow = 1; spawnBurst(n, flaskCX(i), flaskTopY()); stats.autoParticlesFired += n; if (i === 0) sndAutoTick(ts); }
+      }
+    }
+
+    // ─── BUTTON ──────────────────────────────────────────────────────────────────
+    const chgBtn = document.getElementById('chargeBtn');
+    let holdActive = false, holdTO = null, holdRate = 80;
+    function getBtnPos() { const r = chgBtn.getBoundingClientRect(); return [r.left + r.width * .5, r.top + r.height * .5]; }
+    function startHold() { if (gameWon) return; initAudio(); const [bx, by] = getBtnPos(); spawnBurst(9, bx, by); sndClick(); chgBtn.classList.add('active'); holdActive = true; holdRate = 80; (function lp() { if (!holdActive) return; if (!gameWon) { const [bx2, by2] = getBtnPos(); spawnBurst(7, bx2, by2); } holdRate = Math.max(38, holdRate - 1.5); holdTO = setTimeout(lp, holdRate); })(); }
+    function stopHold() { holdActive = false; chgBtn.classList.remove('active'); if (holdTO) { clearTimeout(holdTO); holdTO = null; } }
+    chgBtn.addEventListener('mousedown', startHold); chgBtn.addEventListener('mouseup', stopHold); chgBtn.addEventListener('mouseleave', stopHold);
+    chgBtn.addEventListener('touchstart', e => { e.preventDefault(); startHold(); }, { passive: false }); chgBtn.addEventListener('touchend', stopHold);
+
+    // Canvas click = upgrade flask
+    canvas.addEventListener('mousemove', e => {
+      if (!sectors) { canvas.style.cursor = 'default'; return; }
+      const r = canvas.getBoundingClientRect(), mx = (e.clientX - r.left) * (W / r.width), my = (e.clientY - r.top) * (H / r.height);
+      const by = flaskBY(), topY = flaskTopY();
+      let over = false;
+      for (let i = 0; i < flasks.length; i++) { const bx = flaskCX(i); if (mx > bx - FW - 10 && mx < bx + FW + 10 && my > topY - 10 && my < by + 10) { over = true; break; } }
+      canvas.style.cursor = over ? 'pointer' : 'default';
+    });
+    canvas.addEventListener('click', e => {
+      initAudio(); if (!sectors) return;
+      const r = canvas.getBoundingClientRect(), mx = (e.clientX - r.left) * (W / r.width), my = (e.clientY - r.top) * (H / r.height);
+      const by = flaskBY(), topY = flaskTopY();
+      for (let i = 0; i < flasks.length; i++) { const bx = flaskCX(i); if (mx > bx - FW - 10 && mx < bx + FW + 10 && my > topY - 10 && my < by + 10) { upgradeFlask(i); return; } }
+    });
+
+    // ─── REVEAL ──────────────────────────────────────────────────────────────────
+    const MAX_INNER = 18;
+    function revealSector(sIdx) {
+      const sec = sectors[sIdx]; if (sec.revealed) return;
+      sec.revealed = true; sec.flash = 1; shakeLeft = 20; shakeAmt = 7;
+      const { cx, cy } = sec;
+      for (let k = 0; k < 55; k++) { const ang = rand(0, Math.PI * 2), spd = rand(1.5, 6); sec.innerP.push({ x: cx, y: cy, vx: Math.cos(ang) * spd, vy: Math.sin(ang) * spd, colIdx: Math.floor(rand(0, Math.max(1, levelPCols.length))), sz: rand(1, 3.5), life: 1 }); }
+      sec.rings = [{ r: 0, a: 1 }, { r: 0, a: .6, d: 10 }, { r: 0, a: .4, d: 20 }];
+      stats.sectorsRevealed++; awardStars(STARS_PER_REVEAL, cx, cy - 22); sndReveal(activeRevIdx);
+      activeRevIdx = Math.min(activeRevIdx + 1, LEVELS[currentLvl].reveal.length);
+      if (activeRevIdx >= LEVELS[currentLvl].reveal.length) {
+        gameWon = true; markDone(currentLvl); savePlayer();
+        const lvl = LEVELS[currentLvl];
+        setTimeout(() => {
+          document.getElementById('winEmoji').textContent = lvl.icon;
+          document.getElementById('winSub').textContent = lvl.name + ' · FULLY RESTORED';
+          document.getElementById('nextBtn').style.display = currentLvl < LEVELS.length - 1 ? '' : 'none';
+          document.getElementById('win').classList.add('show');
+        }, 1700);
+      }
+      checkAchievements();
+    }
+
+    // ─── SELECTOR ────────────────────────────────────────────────────────────────
+    function renderPreview(cv, defs) {
+      const c2 = cv.getContext('2d'); c2.clearRect(0, 0, cv.width, cv.height);
+      let mnX = Infinity, mxX = -Infinity, mnY = Infinity, mxY = -Infinity;
+      for (const d of defs) for (const [px, py] of d.pts) { mnX = Math.min(mnX, px); mxX = Math.max(mxX, px); mnY = Math.min(mnY, py); mxY = Math.max(mxY, py); }
+      const sw = mxX - mnX || 1, sh = mxY - mnY || 1, sc = Math.min((cv.width - 6) / sw, (cv.height - 6) / sh);
+      const ox = cv.width * .5 - (mnX + mxX) * .5 * sc, oy = cv.height * .5 - (mnY + mxY) * .5 * sc;
+      for (const d of defs) { c2.beginPath(); c2.moveTo(d.pts[0][0] * sc + ox, d.pts[0][1] * sc + oy); for (let j = 1; j < d.pts.length; j++)c2.lineTo(d.pts[j][0] * sc + ox, d.pts[j][1] * sc + oy); c2.closePath(); c2.strokeStyle = d.col; c2.lineWidth = .85; c2.globalAlpha = .65; c2.stroke(); }
+    }
+    function buildSelectorCards() {
+      const grid = document.getElementById('sel-grid'); grid.innerHTML = '';
+      LEVELS.forEach((lvl, i) => {
+        const unlocked = isUnlocked(i), done = isDone(i);
+        const card = document.createElement('div'); card.className = 'sel-card' + (unlocked ? '' : ' locked') + (done ? ' done' : '');
+        const cv = document.createElement('canvas'); cv.width = 88; cv.height = 50; renderPreview(cv, lvl.sectors); card.appendChild(cv);
+        card.innerHTML += `<div class="sel-lv">LV.${String(i + 1).padStart(2, '0')}</div><div class="sel-name">${lvl.name}</div><div class="sel-badge">${done ? '▣ COMPLETE' : unlocked ? '● UNLOCKED' : '▪ LOCKED'}</div>`;
+        if (unlocked) card.onclick = () => { initAudio(); initGame(i); };
+        grid.appendChild(card);
+      });
+    }
+    function showSelector() {
+      document.getElementById('selector').classList.remove('hidden');
+      document.getElementById('win').classList.remove('show');
+      document.getElementById('panel').style.display = 'none';
+      document.getElementById('flaskCtrl').style.display = 'none';
+      buildSelectorCards();
+    }
+    function nextLevel() { const n = currentLvl + 1; if (n < LEVELS.length) initGame(n); else showSelector(); }
+
+    // ─── DRAW FLASK ROW ───────────────────────────────────────────────────────────
+    function drawAllFlasks(dt) {
+      const by = flaskBY(), topY = flaskTopY();
+      for (let i = 0; i < flasks.length; i++) {
+        const f = flasks[i], bx = flaskCX(i);
+        if (f.flash > 0) f.flash = Math.max(0, f.flash - .022 * dt);
+        if (f.emitGlow > 0) f.emitGlow = Math.max(0, f.emitGlow - .08 * dt);
+        f.pulse += .022 * dt;
+        updateFlaskInner(i, dt);
+        const fc = FLASK_COLS[f.level], [fr, fg, fb] = hexRGB(fc);
+        const pN = (Math.sin(f.pulse) + 1) * .5, fl = f.flash;
+        ctx.save();
+
+        // Flask path
+        ctx.beginPath();
+        ctx.moveTo(bx - FW, by); ctx.lineTo(bx + FW, by);
+        ctx.lineTo(bx + FW, by - FH); ctx.lineTo(bx + FNW, by - FH);
+        ctx.lineTo(bx + FNW, topY); ctx.lineTo(bx - FNW, topY);
+        ctx.lineTo(bx - FNW, by - FH); ctx.lineTo(bx - FW, by - FH);
+        ctx.closePath();
+
+        // Liquid
+        const liqY = by - FH * (.38 + pN * .18);
+        ctx.save(); ctx.clip();
+        ctx.fillStyle = `rgba(${fr},${fg},${fb},${.07 + fl * .2})`; ctx.fillRect(bx - FW, liqY, FW * 2, by - liqY);
+        ctx.fillStyle = `rgba(${fr},${fg},${fb},${.04 + pN * .04})`; ctx.fillRect(bx - FW, liqY - 5, FW * 2, 8);
+        ctx.restore();
+
+        // Glow halo + border
+        ctx.strokeStyle = `rgba(${fr},${fg},${fb},${.08 + fl * .14})`; ctx.lineWidth = 10 + fl * 6; ctx.stroke();
+        ctx.strokeStyle = `rgba(${fr},${fg},${fb},${.62 + fl * .35})`; ctx.lineWidth = 1.5; ctx.stroke();
+
+        // Level number + name inside flask
+        ctx.textAlign = 'center';
+        ctx.font = 'bold 10px Orbitron,monospace'; ctx.fillStyle = `rgba(${fr},${fg},${fb},.9)`;
+        ctx.fillText(`${f.level + 1}`, bx, by - FH * .55 + 5);
+        ctx.font = 'bold 5px Orbitron,monospace'; ctx.fillStyle = `rgba(${fr},${fg},${fb},.5)`;
+        ctx.fillText(FLASK_NAMES[f.level], bx, by - FH * .35 + 4);
+
+        // Emit glow at neck
+        if (f.emitGlow > 0) { ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = f.emitGlow * .4; ctx.fillStyle = `rgba(${fr},${fg},${fb},1)`; ctx.beginPath(); ctx.arc(bx, topY, FNW * 2.2, 0, Math.PI * 2); ctx.fill(); ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1; }
+
+        // Inner particles
+        if (f.innerP.length > 0) {
+          ctx.globalCompositeOperation = 'lighter';
+          for (const p of f.innerP) { const pc = levelPCols[p.colIdx] || [fr, fg, fb], [pr, pg, pb] = pc; ctx.globalAlpha = .32; ctx.fillStyle = `rgba(${pr},${pg},${pb},1)`; ctx.beginPath(); ctx.arc(p.x, p.y, p.sz * 2, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = .72; ctx.beginPath(); ctx.arc(p.x, p.y, p.sz, 0, Math.PI * 2); ctx.fill(); }
+          ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+        }
+        ctx.restore();
+      }
+
+      // Upgrade cost / MAX labels below each flask
+      ctx.textAlign = 'center';
+      for (let i = 0; i < flasks.length; i++) {
+        const f = flasks[i], bx = flaskCX(i), curr = FLASK_UPS[f.level];
+        if (curr.nextCost) {
+          const can = stars >= curr.nextCost;
+          ctx.font = 'bold 7px Orbitron,monospace';
+          ctx.fillStyle = can ? '#ffdd44' : 'rgba(130,110,40,.38)';
+          if (can) { ctx.shadowColor = '#ffdd44'; ctx.shadowBlur = 6; }
+          ctx.fillText(`${curr.nextCost}⭐`, bx, by + 18); ctx.shadowBlur = 0;
+        } else {
+          ctx.font = 'bold 6px Orbitron,monospace'; ctx.fillStyle = FLASK_COLS[f.level]; ctx.fillText('MAX', bx, by + 18);
+        }
+      }
+    }
+
+    // ─── SHIP + PARTICLES RENDER ─────────────────────────────────────────────────
+    function polyPath(poly) { ctx.beginPath(); ctx.moveTo(poly[0][0], poly[0][1]); for (let i = 1; i < poly.length; i++)ctx.lineTo(poly[i][0], poly[i][1]); ctx.closePath(); }
+
+    function updateInner(sec, poly, dt) {
+      const { cx, cy } = sec; let alive = 0;
+      for (let i = 0; i < sec.innerP.length; i++) { const p = sec.innerP[i]; p.life -= (sec.revealed ? .007 : .004) * dt; if (p.life <= 0) continue; p.x += p.vx * dt; p.y += p.vy * dt; if (!sec.revealed && !pip(p.x, p.y, poly)) { const dx = cx - p.x, dy = cy - p.y, d = Math.sqrt(dx * dx + dy * dy) || 1; p.vx = (dx / d) * rand(1.5, 3); p.vy = (dy / d) * rand(1.5, 3); } p.vx += rand(-.3, .3); p.vy += rand(-.3, .3); const sp = Math.sqrt(p.vx * p.vx + p.vy * p.vy); if (sp > 3) { p.vx *= 3 / sp; p.vy *= 3 / sp; } sec.innerP[alive++] = p; }
+      sec.innerP.length = alive; if (sec.innerP.length > MAX_INNER) sec.innerP.length = MAX_INNER;
+    }
+
+    function drawShip(dt) {
+      if (!sectors) return;
+      for (const sec of sectors) {
+        sec.pulse += .018 * dt; if (sec.flash > 0) sec.flash = Math.max(0, sec.flash - .018 * dt);
+        const { poly, cx, cy, rgb } = sec; if (!poly) continue;
+        const sIdx = LEVELS[currentLvl].sectors.indexOf(sec.def), isActive = sIdx === activeSecIdx() && !gameWon;
+        const pN = (Math.sin(sec.pulse) + 1) * .5, [r, g, b] = rgb;
+        updateInner(sec, poly, dt); ctx.save();
+        if (sec.revealed) {
+          const fl = sec.flash; polyPath(poly);
+          ctx.fillStyle = `rgba(${r},${g},${b},${(.10 + fl * .38 + Math.sin(sec.pulse) * .02).toFixed(3)})`; ctx.fill();
+          ctx.strokeStyle = `rgba(${r},${g},${b},${(.11 + fl * .13).toFixed(3)})`; ctx.lineWidth = 14 + fl * 8; ctx.stroke();
+          ctx.strokeStyle = `rgba(${r},${g},${b},${(.8 + fl * .2).toFixed(3)})`; ctx.lineWidth = 2 + fl * 2; ctx.stroke();
+          for (const ring of sec.rings) { if ((ring.d || 0) > 0) { ring.d -= dt; continue; } ring.r += 5 * dt; ring.a -= .018 * dt; if (ring.a > 0) { ctx.strokeStyle = `rgba(${r},${g},${b},${ring.a.toFixed(3)})`; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(cx, cy, ring.r, 0, Math.PI * 2); ctx.stroke(); } }
+          sec.rings = sec.rings.filter(rg => rg.a > 0);
+        } else {
+          const ab = isActive ? .35 : 0, wA = clamp(.18 + pN * .28 + ab + sec.fill * .12, 0, 1);
+          polyPath(poly);
+          if (sec.fill > 0) { ctx.fillStyle = `rgba(${r},${g},${b},${(sec.fill * .11 + pN * sec.fill * .06).toFixed(3)})`; ctx.fill(); }
+          ctx.strokeStyle = `rgba(${r},${g},${b},${(wA * .16).toFixed(3)})`; ctx.lineWidth = isActive ? 16 : 10; ctx.stroke();
+          ctx.strokeStyle = `rgba(${r},${g},${b},${wA.toFixed(3)})`; ctx.lineWidth = isActive ? 1.8 : 1.2; ctx.stroke();
+          ctx.fillStyle = `rgba(${r},${g},${b},${(.3 + pN * .55).toFixed(3)})`;
+          ctx.beginPath(); for (const [vx, vy] of poly) { ctx.moveTo(vx + 3, vy); ctx.arc(vx, vy, 3, 0, Math.PI * 2); } ctx.fill();
+          if (isActive) { ctx.save(); polyPath(poly); ctx.clip(); const sy = cy - 50 + ((time * 22) % 100); const sg = ctx.createLinearGradient(0, sy - 10, 0, sy + 10); sg.addColorStop(0, 'rgba(0,0,0,0)'); sg.addColorStop(.5, `rgba(${r},${g},${b},.13)`); sg.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = sg; ctx.fillRect(cx - 200, sy - 10, 400, 20); ctx.restore(); }
+          if (isActive && sec.fill > .05) { ctx.font = 'bold 8px Orbitron,monospace'; ctx.textAlign = 'center'; ctx.fillStyle = `rgba(${r},${g},${b},.65)`; ctx.fillText(`${Math.floor(sec.fill * 100)}%`, cx, cy + 4); }
+        }
+        if (sec.innerP.length > 0) {
+          ctx.globalCompositeOperation = 'lighter';
+          for (const p of sec.innerP) { if (p.life <= 0) continue; const [pr, pg, pb] = levelPCols[p.colIdx] || [255, 255, 255]; const a = Math.min(p.life * .9, .85), sz = p.sz * (p.life > .25 ? 1 : p.life / .25); ctx.globalAlpha = a * .4; ctx.fillStyle = `rgba(${pr},${pg},${pb},1)`; ctx.beginPath(); ctx.arc(p.x, p.y, sz * 2.5, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = a; ctx.beginPath(); ctx.arc(p.x, p.y, sz, 0, Math.PI * 2); ctx.fill(); }
+          ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+        }
+        ctx.restore();
+      }
+    }
+
+    function drawParticles(dt) {
+      ctx.globalCompositeOperation = 'lighter'; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      for (let i = 0; i < pCount; i++) {
+        if (pDead[i]) continue;
+        pT[i] += pSpd[i] * dt;
+        if (pT[i] >= 1) {
+          const sIdx = pSI[i], sec = sectors && sectors[sIdx];
+          if (sec && !sec.revealed) {
+            sec.fill = Math.min(1, sec.fill + rand(.014, .024));
+            if (sec.innerP.length < MAX_INNER) { const ang = rand(0, Math.PI * 2); sec.innerP.push({ x: pTX[i], y: pTY[i], vx: Math.cos(ang) * rand(.8, 2.5), vy: Math.sin(ang) * rand(.8, 2.5), colIdx: pCI[i], sz: pSZ[i] * .85, life: rand(.7, 1) }); }
+            if (sec.fill >= 1) revealSector(sIdx);
+          }
+          pDead[i] = 1; pAlive--; continue;
+        }
+        const t = pT[i], mt = 1 - t, nx = mt * mt * pSX[i] + 2 * mt * t * pCPX[i] + t * t * pTX[i], ny = mt * mt * pSY[i] + 2 * mt * t * pCPY[i] + t * t * pTY[i];
+        pX[i] = nx; pY[i] = ny; pushTrail(i, nx, ny);
+        const [pr, pg, pb] = levelPCols[pCI[i]] || [255, 255, 255], sz = pSZ[i], tl = tLen[i], hd = tHd[i], base = i * TMAX * 2;
+        if (tl > 1) { ctx.globalAlpha = .55; ctx.strokeStyle = `rgba(${pr},${pg},${pb},1)`; ctx.lineWidth = sz * .85; ctx.beginPath(); const old = (hd - tl + TMAX) % TMAX; ctx.moveTo(tBuf[base + old * 2], tBuf[base + old * 2 + 1]); for (let j = 1; j < tl; j++) { const idx = (old + j) % TMAX; ctx.lineTo(tBuf[base + idx * 2], tBuf[base + idx * 2 + 1]); } ctx.stroke(); }
+        ctx.globalAlpha = .28; ctx.fillStyle = `rgba(${pr},${pg},${pb},1)`; ctx.beginPath(); ctx.arc(nx, ny, sz * 3.2, 0, Math.PI * 2); ctx.fill();
+        ctx.globalAlpha = .65; ctx.beginPath(); ctx.arc(nx, ny, sz * 1.5, 0, Math.PI * 2); ctx.fill();
+        ctx.globalAlpha = 1; ctx.fillStyle = 'rgba(255,255,255,.9)'; ctx.beginPath(); ctx.arc(nx, ny, sz * .5, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+    }
+
+    function drawFloatTexts(dt) {
+      if (!floatTexts.length) return; ctx.textAlign = 'center';
+      for (let i = floatTexts.length - 1; i >= 0; i--) {
+        const f = floatTexts[i]; f.y += f.vy * dt; f.alpha -= .022 * dt;
+        if (f.alpha <= 0) { floatTexts.splice(i, 1); continue; }
+        ctx.globalAlpha = f.alpha; ctx.shadowColor = f.col; ctx.shadowBlur = 8;
+        ctx.fillStyle = f.col; ctx.font = 'bold 13px Orbitron,monospace'; ctx.fillText(f.text, f.x, f.y);
+      }
+      ctx.globalAlpha = 1; ctx.shadowBlur = 0;
+    }
+
+    // ─── MAIN LOOP ────────────────────────────────────────────────────────────────
+    let last = 0;
+    function loop(ts) {
+      requestAnimationFrame(loop);
+      const dt = Math.min((ts - last) / 16.667, 3); last = ts; time += dt;
+      ctx.fillStyle = '#000d20'; ctx.fillRect(0, 0, W, H);
+      const ng = ctx.createRadialGradient(SCX(), SCY() - 20, 0, SCX(), SCY() - 20, 200); ng.addColorStop(0, 'rgba(8,35,80,.15)'); ng.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = ng; ctx.fillRect(0, 0, W, H);
+
+      let ox = 0, oy = 0;
+      if (shakeLeft > 0) { shakeLeft -= dt; shakeAmt *= .93; ox = rand(-shakeAmt, shakeAmt); oy = rand(-shakeAmt, shakeAmt); ctx.save(); ctx.translate(ox, oy); }
+
+      ctx.fillStyle = '#fff';
+      for (let i = 0; i < NS; i++) { sPh[i] += sSpd[i] * dt; ctx.globalAlpha = (Math.sin(sPh[i]) * .44 + .56) * sBa[i]; const r = sR[i]; ctx.fillRect(sX[i] - r, sY[i] - r, r * 2, r * 2); }
+      ctx.globalAlpha = 1;
+
+      drawShip(dt);
+      if (sectors) { drawAllFlasks(dt); updateAutoSpawn(dt, ts); }
+      drawParticles(dt); drawFloatTexts(dt);
+
+      if (shakeLeft > 0 || (ox || oy)) ctx.restore();
+      if (sectors) updateHUD();
+    }
+
+    // ─── BOOT ────────────────────────────────────────────────────────────────────
+    document.addEventListener('click', initAudio, { once: true });
+    document.addEventListener('touchstart', initAudio, { once: true });
+    resize(); showSelector(); updateAchBtn(); requestAnimationFrame(loop);
+  </script>
+</body>
+
+</html>
