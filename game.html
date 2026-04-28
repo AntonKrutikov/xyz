@@ -10,35 +10,19 @@
 body{background:#000;overflow:hidden;user-select:none;}
 canvas{position:fixed;top:0;left:0;display:block;}
 
-/* ── STARS HUD (top-right) ── */
-#starsHud{
-  position:fixed;top:18px;right:22px;z-index:20;pointer-events:none;
-  font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;letter-spacing:3px;
-  color:#ffdd44;text-shadow:0 0 12px #ffdd44,0 0 28px rgba(255,220,40,0.4);
-}
-#starsHud span{font-size:10px;opacity:.7;}
+#starsHud{position:fixed;top:18px;right:22px;z-index:20;pointer-events:none;font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;letter-spacing:3px;color:#ffdd44;text-shadow:0 0 12px #ffdd44,0 0 28px rgba(255,220,40,.35);}
 
-/* ── MUTE BTN ── */
-#muteBtn{
-  position:fixed;top:16px;right:110px;z-index:30;
-  background:transparent;border:1px solid rgba(0,255,255,0.2);
-  color:rgba(0,255,255,0.5);font-size:12px;padding:5px 9px;cursor:pointer;
-  font-family:'Orbitron',sans-serif;transition:all .15s;
-}
+#muteBtn{position:fixed;top:16px;right:110px;z-index:30;background:transparent;border:1px solid rgba(0,255,255,.2);color:rgba(0,255,255,.5);font-size:12px;padding:5px 9px;cursor:pointer;font-family:'Orbitron',sans-serif;transition:all .15s;}
 #muteBtn:hover{border-color:rgba(0,255,255,.6);color:#00ffff;}
 
 /* ── SELECTOR ── */
-#selector{
-  position:fixed;inset:0;z-index:50;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;
-  background:rgba(0,4,18,0.97);transition:opacity .4s;
-}
+#selector{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;background:rgba(0,4,18,.97);transition:opacity .4s;}
 #selector.hidden{opacity:0;pointer-events:none;}
 #sel-title{font-family:'Orbitron',sans-serif;font-size:clamp(12px,2.5vw,20px);font-weight:900;letter-spacing:10px;color:#00ffff;text-shadow:0 0 20px #00ffff;}
 #sel-sub{font-family:'Orbitron',sans-serif;font-size:8px;letter-spacing:6px;color:rgba(0,200,255,.35);margin-top:-16px;}
 #sel-grid{display:grid;grid-template-columns:repeat(4,148px);gap:10px;}
 @media(max-width:680px){#sel-grid{grid-template-columns:repeat(2,148px);}}
-.sel-card{width:148px;height:118px;border:1px solid rgba(0,255,255,.15);background:rgba(0,12,30,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;transition:all .18s;position:relative;overflow:hidden;}
+.sel-card{width:148px;height:118px;border:1px solid rgba(0,255,255,.15);background:rgba(0,12,30,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;transition:all .18s;position:relative;}
 .sel-card:hover:not(.locked){border-color:rgba(0,255,255,.55);transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,255,255,.12);}
 .sel-card.locked{opacity:.28;cursor:not-allowed;filter:grayscale(.7);}
 .sel-card.done{border-color:rgba(0,255,140,.35);}
@@ -55,35 +39,35 @@ canvas{position:fixed;top:0;left:0;display:block;}
 #progressFill{height:100%;width:0%;transition:width .06s;}
 #indicators{color:rgba(0,200,255,.38);font-size:10px;letter-spacing:5px;}
 
-/* ── FLASK CTRL (above charge btn) ── */
+/* ── FLASK CTRL ── */
 #flaskCtrl{
-  position:fixed;bottom:115px;left:50%;transform:translateX(-50%);
-  display:none;align-items:center;gap:14px;z-index:10;
+  position:fixed;bottom:120px;left:50%;transform:translateX(-50%);
+  display:none;flex-direction:column;align-items:center;gap:6px;z-index:10;
 }
-#flaskInfo{text-align:right;font-family:'Orbitron',sans-serif;}
-#flaskLvName{color:rgba(0,255,255,.65);font-size:8px;letter-spacing:3px;}
-#flaskAutoRate{color:rgba(0,200,255,.45);font-size:7px;letter-spacing:2px;margin-top:2px;}
-#upgradeFlaskBtn{
+#flaskTopRow{display:flex;align-items:center;gap:16px;}
+#flaskTotalInfo{font-family:'Orbitron',sans-serif;font-size:8px;letter-spacing:3px;color:rgba(0,200,255,.5);}
+#flaskHint{font-family:'Orbitron',sans-serif;font-size:6px;letter-spacing:3px;color:rgba(0,150,200,.3);}
+#buyFlaskBtn{
   font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:3px;
-  color:#ffdd44;background:transparent;border:1px solid rgba(255,221,68,.35);
-  padding:8px 13px;cursor:pointer;text-shadow:0 0 8px #ffdd44;
-  box-shadow:0 0 12px rgba(255,221,68,.12);transition:all .15s;
+  color:#00ffff;background:transparent;border:1px solid rgba(0,255,255,.3);
+  padding:7px 14px;cursor:pointer;text-shadow:0 0 8px #00ffff;
+  box-shadow:0 0 12px rgba(0,255,255,.1);transition:all .15s;
 }
-#upgradeFlaskBtn:hover:not(:disabled){border-color:#ffdd44;box-shadow:0 0 24px rgba(255,221,68,.4);}
-#upgradeFlaskBtn:disabled{opacity:.28;cursor:not-allowed;}
+#buyFlaskBtn:hover:not(:disabled){border-color:#00ffff;box-shadow:0 0 22px rgba(0,255,255,.4);}
+#buyFlaskBtn:disabled{opacity:.22;cursor:not-allowed;}
 
-/* ── CHARGE PANEL ── */
+/* ── PANEL ── */
 #panel{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);display:none;flex-direction:column;align-items:center;gap:10px;}
 #chargeBtn{
   font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;letter-spacing:8px;
   color:var(--hcol,#00ffff);background:transparent;border:2px solid var(--hcol,#00ffff);
-  padding:13px 48px;cursor:pointer;text-shadow:0 0 10px var(--hcol,#00ffff);
-  box-shadow:0 0 26px rgba(0,255,255,.18),inset 0 0 20px rgba(0,255,255,.03);
+  padding:12px 44px;cursor:pointer;text-shadow:0 0 10px var(--hcol,#00ffff);
+  box-shadow:0 0 24px rgba(0,255,255,.16),inset 0 0 18px rgba(0,255,255,.03);
   transition:all .1s;outline:none;position:relative;
 }
 #chargeBtn::before{content:'';position:absolute;inset:-5px;border:1px solid rgba(0,255,255,.1);pointer-events:none;}
-#chargeBtn:hover{box-shadow:0 0 50px rgba(0,255,255,.45),inset 0 0 26px rgba(0,255,255,.07);}
-#chargeBtn.active{transform:scale(.965);background:rgba(0,255,255,.09);box-shadow:0 0 85px rgba(0,255,255,.7),inset 0 0 35px rgba(0,255,255,.12);}
+#chargeBtn:hover{box-shadow:0 0 48px rgba(0,255,255,.42),inset 0 0 24px rgba(0,255,255,.07);}
+#chargeBtn.active{transform:scale(.965);background:rgba(0,255,255,.09);box-shadow:0 0 80px rgba(0,255,255,.7),inset 0 0 32px rgba(0,255,255,.12);}
 #hint{color:rgba(0,200,255,.22);font-family:'Orbitron',sans-serif;font-size:7px;letter-spacing:5px;}
 
 /* ── WIN ── */
@@ -120,16 +104,16 @@ canvas{position:fixed;top:0;left:0;display:block;}
 </div>
 
 <div id="flaskCtrl">
-  <div id="flaskInfo">
-    <div id="flaskLvName">CRUDE FLASK</div>
-    <div id="flaskAutoRate">AUTO: 0.5 / s</div>
+  <div id="flaskTopRow">
+    <span id="flaskTotalInfo">AUTO: 1.0/s</span>
+    <button id="buyFlaskBtn">⊕ FLASK #2 · 8⭐</button>
   </div>
-  <button id="upgradeFlaskBtn">⬆ UPGRADE · 5⭐</button>
+  <div id="flaskHint">CLICK FLASK TO UPGRADE</div>
 </div>
 
 <div id="panel">
   <button id="chargeBtn">⚡ CHARGE ⚡</button>
-  <div id="hint">CLICK · HOLD · FLASK AUTO-CHARGES</div>
+  <div id="hint">CLICK · HOLD · FLASK AUTO-FIRES</div>
 </div>
 
 <div id="win">
@@ -149,134 +133,200 @@ canvas{position:fixed;top:0;left:0;display:block;}
 const canvas=document.getElementById('c');
 const ctx=canvas.getContext('2d',{alpha:false});
 let W,H;
-function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;rebuildPolys();initStars();}
+function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;rebuildPolys();initStarField();}
 window.addEventListener('resize',resize);
-const SCX=()=>W*.5,SCY=()=>H*.40;
+const SCX=()=>W*.5, SCY=()=>H*.40;
 const rand=(a,b)=>a+Math.random()*(b-a);
 const clamp=(v,a,b)=>v<a?a:v>b?b:v;
 function hexRGB(h){return[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];}
 
 // ─── AUDIO ───────────────────────────────────────────────────────────────────
-let audioCtx=null,masterGain=null,muted=false,bgTimer=null;
-const PENTATONIC=[130.81,146.83,164.81,196.00,220.00,261.63,293.66,329.63,392.00,440.00];
-let lastAutoSound=0;
+let audioCtx=null,masterGain=null,muted=false,bgTimer=null,lastAutoSound=0;
+const PENTATONIC=[130.81,146.83,164.81,196,220,261.63,293.66,329.63,392,440];
 
 function initAudio(){
   if(audioCtx)return;
   try{
     audioCtx=new(window.AudioContext||window.webkitAudioContext)();
-    masterGain=audioCtx.createGain();
-    masterGain.gain.value=muted?0:.55;
-    masterGain.connect(audioCtx.destination);
-    scheduleBgNote();
+    masterGain=audioCtx.createGain();masterGain.gain.value=muted?0:.52;
+    masterGain.connect(audioCtx.destination);scheduleBgNote();
   }catch(e){}
 }
-
 function tone(freq,dur,vol,type='sine',delay=0){
   if(!audioCtx||muted)return;
-  const t=audioCtx.currentTime+delay;
-  const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+  const t=audioCtx.currentTime+delay,o=audioCtx.createOscillator(),g=audioCtx.createGain();
   o.type=type;o.frequency.value=freq;
-  g.gain.setValueAtTime(0,t);
-  g.gain.linearRampToValueAtTime(vol,t+Math.min(.08,dur*.3));
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+Math.min(.08,dur*.3));
   g.gain.exponentialRampToValueAtTime(.0001,t+dur);
-  o.connect(g);g.connect(masterGain);
-  o.start(t);o.stop(t+dur+.05);
+  o.connect(g);g.connect(masterGain);o.start(t);o.stop(t+dur+.05);
 }
-
 function scheduleBgNote(){
   if(!audioCtx)return;
   const freq=PENTATONIC[Math.floor(Math.random()*PENTATONIC.length)];
-  const now=audioCtx.currentTime;
-  // Soft pad note
-  const o=audioCtx.createOscillator(),g=audioCtx.createGain(),f=audioCtx.createBiquadFilter();
-  o.type='triangle';o.frequency.value=freq;
-  f.type='lowpass';f.frequency.value=500;f.Q.value=1;
-  g.gain.setValueAtTime(0,now);
-  g.gain.linearRampToValueAtTime(muted?0:.018,now+2.2);
-  g.gain.linearRampToValueAtTime(0,now+7.5);
-  o.connect(f);f.connect(g);g.connect(masterGain);
-  o.start(now);o.stop(now+8.2);
-  // Optional overtone
-  if(Math.random()>.55) tone(freq*1.5,5,.008,'sine',1.2);
-  // Low drone pulse
-  if(Math.random()>.7) tone(freq*.5,3,.012,'sine',0);
+  const now=audioCtx.currentTime,o=audioCtx.createOscillator(),g=audioCtx.createGain(),f=audioCtx.createBiquadFilter();
+  o.type='triangle';o.frequency.value=freq;f.type='lowpass';f.frequency.value=500;
+  g.gain.setValueAtTime(0,now);g.gain.linearRampToValueAtTime(muted?0:.017,now+2.2);g.gain.linearRampToValueAtTime(0,now+7.5);
+  o.connect(f);f.connect(g);g.connect(masterGain);o.start(now);o.stop(now+8.2);
+  if(Math.random()>.55)tone(freq*1.5,5,.007,'sine',1.2);
+  if(Math.random()>.7)tone(freq*.5,3,.010,'sine',0);
   bgTimer=setTimeout(scheduleBgNote,rand(2800,5500));
 }
+function sndClick(){tone(880,.14,.04,'sine');tone(660,.10,.024,'sine',.05);}
+function sndAutoTick(ts){if(!audioCtx||ts-lastAutoSound<2400)return;lastAutoSound=ts;tone(PENTATONIC[Math.floor(Math.random()*PENTATONIC.length)]*2,.09,.013,'sine');}
+function sndReveal(idx){const root=PENTATONIC[idx%PENTATONIC.length]*2;[1,1.25,1.5,2].forEach((r,i)=>tone(root*r,2.2,.062/(i+1),'sine',i*.07));for(let i=0;i<4;i++)tone(root*(2+i*.5),.22,.018,'sine',.15+i*.06);}
+function sndUpgrade(){[261.63,329.63,392,523.25].forEach((f,i)=>tone(f,.9,.055,'triangle',i*.09));}
+function sndStars(){tone(1318.5,.18,.048,'sine');tone(1568,.15,.038,'sine',.1);}
 
-function soundSpawnClick(){
-  tone(880,.14,.04,'sine');
-  tone(660,.10,.025,'sine',.05);
-}
-
-function soundAutoTick(ts){
-  if(!audioCtx||ts-lastAutoSound<2200)return;
-  lastAutoSound=ts;
-  const f=PENTATONIC[Math.floor(Math.random()*PENTATONIC.length)]*2;
-  tone(f,.09,.014,'sine');
-}
-
-function soundReveal(idx){
-  const root=PENTATONIC[idx%PENTATONIC.length]*2;
-  [1,1.25,1.5,2].forEach((r,i)=>tone(root*r,2.2,.065/(i+1),'sine',i*.07));
-  for(let i=0;i<4;i++) tone(root*(2+i*.5),.25,.02,'sine',.15+i*.06);
-}
-
-function soundUpgrade(){
-  [261.63,329.63,392,523.25].forEach((f,i)=>tone(f,.9,.06,'triangle',i*.09));
-}
-
-function soundStars(){
-  tone(1318.5,.18,.05,'sine');
-  tone(1568,.15,.04,'sine',.1);
-}
-
-// Mute toggle
-const muteBtn=document.getElementById('muteBtn');
-muteBtn.addEventListener('click',()=>{
-  initAudio();
-  muted=!muted;
-  if(masterGain)masterGain.gain.value=muted?0:.55;
-  muteBtn.textContent=muted?'🔇':'🔊';
+document.getElementById('muteBtn').addEventListener('click',()=>{
+  initAudio();muted=!muted;if(masterGain)masterGain.gain.value=muted?0:.52;
+  document.getElementById('muteBtn').textContent=muted?'🔇':'🔊';
 });
 
-// ─── FLASK SYSTEM ────────────────────────────────────────────────────────────
+// ─── FLASK SYSTEM ─────────────────────────────────────────────────────────────
+// Upgrade tiers — lower costs, higher rates (2× previous)
 const FLASK_UPS=[
-  {name:'CRUDE FLASK',   rate:.5,  cost:0,  nextCost:5 },
-  {name:'GLASS FLASK',   rate:1.2, cost:5,  nextCost:12},
-  {name:'CRYSTAL FLASK', rate:2.5, cost:12, nextCost:25},
-  {name:'ARCANE FLASK',  rate:5.0, cost:25, nextCost:50},
-  {name:'VOID FLASK',    rate:10,  cost:50, nextCost:90},
-  {name:'QUANTUM FLASK', rate:18,  cost:90, nextCost:null},
+  {name:'CRUDE FLASK',   rate:1.0, nextCost:3 },
+  {name:'GLASS FLASK',   rate:2.5, nextCost:7 },
+  {name:'CRYSTAL FLASK', rate:5.0, nextCost:14},
+  {name:'ARCANE FLASK',  rate:10,  nextCost:26},
+  {name:'VOID FLASK',    rate:18,  nextCost:48},
+  {name:'QUANTUM FLASK', rate:32,  nextCost:null},
 ];
-const FLASK_COLS=['#00ccff','#44ddff','#88eeff','#aa44ff','#aa22ff','#ff44ff'];
+// Cost to add the Nth flask (index = current count - 1, so cost for 2nd flask is [0]=8)
+const FLASK_ADD_COSTS=[8,16,28,44,64,88,118];
+const FLASK_COLS=['#00ccff','#44ddff','#aaeeff','#aa44ff','#6622ff','#ff44ff'];
+const FLASK_INNER_BASE=2; // inner particles at LV0
 
-// Flask geometry (relative to bottom-center)
-const FW=26,FH=52,FNW=9,FNH=24; // body half-w, body h, neck half-w, neck h
-function flaskBX(){return W*.5;}
-function flaskBY(){return H-178;}
-function flaskTopY(){return flaskBY()-FH-FNH;}
-function flaskPoly(){
-  const bx=flaskBX(),by=flaskBY();
-  return[[bx-FW,by],[bx+FW,by],[bx+FW,by-FH],[bx+FNW,by-FH],[bx+FNW,by-FH-FNH],[bx-FNW,by-FH-FNH],[bx-FNW,by-FH],[bx-FW,by-FH]];
+// Flask geometry — small so 8 fit in a row
+const FW=13,FH=42,FNW=5,FNH=17; // half-body-width, body-height, half-neck-width, neck-height
+const F_STRIDE=FW*2+10;          // 36px per flask slot
+
+function flaskBY(){return H-205;}        // bottom Y of all flask bodies
+function flaskTopY(){return flaskBY()-FH-FNH;} // neck tip Y (emit point)
+function flaskCX(i){                     // center X of flask i
+  const n=flasks.length;
+  const rowW=n*F_STRIDE-10;
+  return W*.5-rowW*.5+FW+i*F_STRIDE;
 }
 
-let flaskLevel=0,stars=0,autoAccum=0;
-let flaskInnerP=[],flaskFlash=0,flaskEmitGlow=0;
-const FLASK_INNER_MAX=6;
+let flasks=[];  // [{level,accum,innerP,emitGlow,flash,pulse}]
 
 // ─── PERSISTENCE ─────────────────────────────────────────────────────────────
-function loadData(){try{return JSON.parse(localStorage.getItem('sr2_data')||'{}');}catch{return{};}}
-function saveData(d){try{localStorage.setItem('sr2_data',JSON.stringify(d));}catch{}}
-function loadPlayer(){const d=loadData();stars=d.stars||0;flaskLevel=d.flaskLevel||0;}
-function savePlayer(){const d=loadData();d.stars=stars;d.flaskLevel=flaskLevel;saveData(d);}
-function loadProgress(){try{return JSON.parse(localStorage.getItem('sr2_prog')||'{"done":[]}');}catch{return{done:[]};}}
-function saveProgress(p){try{localStorage.setItem('sr2_prog',JSON.stringify(p));}catch{}}
+let stars=0;
+function loadData(){try{return JSON.parse(localStorage.getItem('sr3_data')||'{}');}catch{return{};}}
+function saveData(d){try{localStorage.setItem('sr3_data',JSON.stringify(d));}catch{}}
+function loadProgress(){try{return JSON.parse(localStorage.getItem('sr3_prog')||'{"done":[]}');}catch{return{done:[]};}}
+function saveProgress(p){try{localStorage.setItem('sr3_prog',JSON.stringify(p));}catch{}}
 function isUnlocked(i){if(i===0)return true;const p=loadProgress();return p.done&&p.done.includes(i-1);}
 function isDone(i){const p=loadProgress();return p.done&&p.done.includes(i);}
 function markDone(i){const p=loadProgress();if(!p.done)p.done=[];if(!p.done.includes(i))p.done.push(i);saveProgress(p);}
+function loadPlayer(){
+  const d=loadData();stars=d.stars||0;
+  const sf=d.flasks||[{level:0}];
+  flasks=sf.map(f=>({level:Math.min(f.level||0,FLASK_UPS.length-1),accum:0,innerP:[],emitGlow:0,flash:0,pulse:rand(0,Math.PI*2)}));
+}
+function savePlayer(){const d=loadData();d.stars=stars;d.flasks=flasks.map(f=>({level:f.level}));saveData(d);}
+loadPlayer();
 
-// ─── LEVEL DEFINITIONS ───────────────────────────────────────────────────────
+// ─── FLOAT TEXTS ─────────────────────────────────────────────────────────────
+const floatTexts=[];
+function addFloat(text,x,y,col='#ffdd44'){floatTexts.push({text,x,y,alpha:1,vy:-1.1,col});}
+
+// ─── CURRENCY AWARD ──────────────────────────────────────────────────────────
+const STARS_PER_REVEAL=5;
+function awardStars(n,x,y){
+  stars+=n;savePlayer();
+  document.getElementById('starsCount').textContent=stars;
+  updateFlaskUI();addFloat(`+${n} ⭐`,x,y);sndStars();
+}
+
+// ─── FLASK UI ────────────────────────────────────────────────────────────────
+function updateFlaskUI(){
+  if(!flasks.length)return;
+  const totalRate=flasks.reduce((s,f)=>s+FLASK_UPS[f.level].rate,0);
+  document.getElementById('flaskTotalInfo').textContent=`AUTO: ${totalRate.toFixed(1)}/s`;
+  const btn=document.getElementById('buyFlaskBtn');
+  if(flasks.length>=8){btn.style.display='none';}
+  else{
+    const cost=FLASK_ADD_COSTS[flasks.length-1];
+    btn.textContent=`⊕ FLASK #${flasks.length+1} · ${cost}⭐`;
+    btn.disabled=(stars<cost);btn.style.display='';
+  }
+}
+
+// Buy new flask
+document.getElementById('buyFlaskBtn').addEventListener('click',()=>{
+  initAudio();
+  if(flasks.length>=8)return;
+  const cost=FLASK_ADD_COSTS[flasks.length-1];
+  if(stars<cost){addFloat(`NEED ${cost}⭐`,W*.5,flaskTopY()-18,'#ff4444');return;}
+  stars-=cost;
+  flasks.push({level:0,accum:0,innerP:[],emitGlow:0,flash:0,pulse:rand(0,Math.PI*2)});
+  initAllFlaskInner();  // reinit all (positions shifted)
+  savePlayer();
+  document.getElementById('starsCount').textContent=stars;
+  updateFlaskUI();sndUpgrade();
+  addFloat(`FLASK #${flasks.length} ONLINE!`,W*.5,flaskTopY()-22,'#00ffff');
+});
+
+// Upgrade individual flask (called from canvas click)
+function upgradeFlask(idx){
+  const f=flasks[idx];
+  const curr=FLASK_UPS[f.level];
+  if(!curr.nextCost){addFloat('MAX LEVEL',flaskCX(idx),flaskTopY()-18,FLASK_COLS[f.level]);return;}
+  if(stars<curr.nextCost){addFloat(`NEED ${curr.nextCost}⭐`,flaskCX(idx),flaskTopY()-18,'#ff4444');return;}
+  stars-=curr.nextCost;f.level++;f.flash=1;
+  savePlayer();
+  document.getElementById('starsCount').textContent=stars;
+  updateFlaskUI();sndUpgrade();
+  addFloat(`LV.${f.level+1}!`,flaskCX(idx),flaskTopY()-18,'#ffdd44');
+}
+
+// ─── FLASK INNER PARTICLES ───────────────────────────────────────────────────
+function initFlaskInner(i){
+  const f=flasks[i];const bx=flaskCX(i),by=flaskBY();
+  f.innerP=[];const max=FLASK_INNER_BASE+f.level;
+  for(let k=0;k<max;k++){
+    f.innerP.push({x:bx+rand(-FW*.65,FW*.65),y:by-rand(4,FH-4),vx:rand(-.5,.5),vy:rand(-.5,.5),colIdx:Math.floor(rand(0,Math.max(1,levelPCols.length))),sz:rand(.7,1.5)});
+  }
+}
+function initAllFlaskInner(){for(let i=0;i<flasks.length;i++)initFlaskInner(i);}
+
+function updateFlaskInner(i,dt){
+  const f=flasks[i];const bx=flaskCX(i),by=flaskBY();
+  const max=FLASK_INNER_BASE+f.level;
+  for(const p of f.innerP){
+    p.x+=p.vx*dt;p.y+=p.vy*dt;
+    if(p.x<bx-FW+2)p.vx=Math.abs(p.vx);if(p.x>bx+FW-2)p.vx=-Math.abs(p.vx);
+    if(p.y<by-FH+2)p.vy=Math.abs(p.vy);if(p.y>by-2)p.vy=-Math.abs(p.vy);
+    p.vx+=rand(-.035,.035);p.vy+=rand(-.035,.035);
+    const sp=Math.sqrt(p.vx*p.vx+p.vy*p.vy);if(sp>1.0){p.vx*=1/sp;p.vy*=1/sp;}
+    if(Math.random()<.004)p.colIdx=Math.floor(rand(0,Math.max(1,levelPCols.length)));
+  }
+  while(f.innerP.length<max){f.innerP.push({x:bx+rand(-FW*.65,FW*.65),y:by-rand(4,FH-4),vx:rand(-.5,.5),vy:rand(-.5,.5),colIdx:Math.floor(rand(0,Math.max(1,levelPCols.length))),sz:rand(.7,1.5)});}
+  if(f.innerP.length>max)f.innerP.length=max;
+}
+
+// ─── STARFIELD ───────────────────────────────────────────────────────────────
+const NS=200;
+const sX=new Float32Array(NS),sY=new Float32Array(NS),sR=new Float32Array(NS);
+const sPh=new Float32Array(NS),sSpd=new Float32Array(NS),sBa=new Float32Array(NS);
+function initStarField(){for(let i=0;i<NS;i++){sX[i]=rand(0,W);sY[i]=rand(0,H);sR[i]=rand(.2,1.8);sPh[i]=rand(0,Math.PI*2);sSpd[i]=rand(.003,.022);sBa[i]=rand(.2,.75);}}
+
+// ─── PARTICLE POOL ───────────────────────────────────────────────────────────
+const MAX_P=420,TMAX=10;
+const pSX=new Float32Array(MAX_P),pSY=new Float32Array(MAX_P);
+const pX=new Float32Array(MAX_P),pY=new Float32Array(MAX_P);
+const pTX=new Float32Array(MAX_P),pTY=new Float32Array(MAX_P);
+const pCPX=new Float32Array(MAX_P),pCPY=new Float32Array(MAX_P);
+const pT=new Float32Array(MAX_P),pSpd=new Float32Array(MAX_P),pSZ=new Float32Array(MAX_P);
+const pDead=new Uint8Array(MAX_P),pCI=new Uint8Array(MAX_P),pSI=new Int32Array(MAX_P);
+const tBuf=new Float32Array(MAX_P*TMAX*2),tLen=new Uint8Array(MAX_P),tHd=new Uint8Array(MAX_P);
+let pCount=0,pAlive=0;
+function pushTrail(i,x,y){const b=i*TMAX*2,s=tHd[i];tBuf[b+s*2]=x;tBuf[b+s*2+1]=y;tHd[i]=(s+1)%TMAX;if(tLen[i]<TMAX)tLen[i]++;}
+function allocP(){if(pAlive>=MAX_P)return-1;for(let i=0;i<pCount;i++)if(pDead[i]){pDead[i]=0;tLen[i]=0;tHd[i]=0;return i;}if(pCount<MAX_P){const i=pCount++;pDead[i]=0;tLen[i]=0;tHd[i]=0;return i;}return-1;}
+
+// ─── LEVELS ──────────────────────────────────────────────────────────────────
 function pizzaSlices(){
   const R=108,names=['TOMATO SAUCE','MOZZARELLA','PEPPERONI','FRESH BASIL','PLUM TOMATO','BURRATA','STONE CRUST','PROSCIUTTO'];
   const cols=['#cc3311','#ffcc33','#ff6600','#44aa22','#cc2211','#ffdd55','#884422','#ff8844'];
@@ -285,7 +335,6 @@ function pizzaSlices(){
     return{name:names[i],col:cols[i],pts:[[0,0],[Math.round(R*Math.cos(a1)),Math.round(R*Math.sin(a1))],[Math.round(r2*Math.cos(am)),Math.round(r2*Math.sin(am))],[Math.round(R*Math.cos(a2)),Math.round(R*Math.sin(a2))]]};
   });
 }
-
 const LEVELS=[
 {id:0,name:'VIPER-7 STARSHIP',icon:'🚀',theme:'#00ffff',pcols:['#00ffff','#4488ff','#ff44ff','#88aaff','#ffffff','#aaddff'],reveal:[7,6,5,0,1,2,3,4],sectors:[
   {name:'PORT WING',   pts:[[-38,8],[-30,-22],[-62,-38],[-108,10],[-94,44],[-44,28]],col:'#ff6622'},
@@ -360,62 +409,6 @@ const LEVELS=[
 ]},
 ];
 
-// ─── STARS + FLASK INIT ──────────────────────────────────────────────────────
-loadPlayer();
-const STARS_PER_REVEAL=5;
-const floatTexts=[];
-
-function addFloat(text,x,y,col='#ffdd44'){floatTexts.push({text,x,y,alpha:1,vy:-1.1,col});}
-
-function awardStars(n,x,y){
-  stars+=n;savePlayer();
-  document.getElementById('starsCount').textContent=stars;
-  updateFlaskUI();
-  addFloat(`+${n} ⭐`,x,y);
-  soundStars();
-}
-
-function updateFlaskUI(){
-  const c=FLASK_UPS[flaskLevel],nxt=FLASK_UPS[flaskLevel+1];
-  document.getElementById('flaskLvName').textContent=c.name;
-  document.getElementById('flaskAutoRate').textContent=`AUTO: ${c.rate} / s`;
-  const btn=document.getElementById('upgradeFlaskBtn');
-  if(!nxt){btn.textContent='⭐ MAX LEVEL';btn.disabled=true;}
-  else{btn.textContent=`⬆ UPGRADE · ${nxt.cost}⭐`;btn.disabled=(stars<nxt.cost);}
-}
-
-document.getElementById('upgradeFlaskBtn').addEventListener('click',()=>{
-  initAudio();
-  const nxt=FLASK_UPS[flaskLevel+1];
-  if(!nxt||stars<nxt.cost)return;
-  stars-=nxt.cost;flaskLevel++;savePlayer();
-  flaskFlash=1;
-  updateFlaskUI();
-  document.getElementById('starsCount').textContent=stars;
-  soundUpgrade();
-  addFloat('FLASK UPGRADED!',flaskBX(),flaskBY()-FH*1.5,'#ffdd44');
-});
-
-// ─── STARS (visual) ──────────────────────────────────────────────────────────
-const NS=200;
-const sX=new Float32Array(NS),sY=new Float32Array(NS),sR=new Float32Array(NS);
-const sPh=new Float32Array(NS),sSpd=new Float32Array(NS),sBa=new Float32Array(NS);
-function initStars(){for(let i=0;i<NS;i++){sX[i]=rand(0,W);sY[i]=rand(0,H);sR[i]=rand(.2,1.8);sPh[i]=rand(0,Math.PI*2);sSpd[i]=rand(.003,.022);sBa[i]=rand(.2,.75);}}
-
-// ─── PARTICLE POOL ───────────────────────────────────────────────────────────
-const MAX_P=320,TMAX=10;
-const pSX=new Float32Array(MAX_P),pSY=new Float32Array(MAX_P);
-const pX=new Float32Array(MAX_P),pY=new Float32Array(MAX_P);
-const pTX=new Float32Array(MAX_P),pTY=new Float32Array(MAX_P);
-const pCPX=new Float32Array(MAX_P),pCPY=new Float32Array(MAX_P);
-const pT=new Float32Array(MAX_P),pSpd=new Float32Array(MAX_P),pSZ=new Float32Array(MAX_P);
-const pDead=new Uint8Array(MAX_P),pCI=new Uint8Array(MAX_P),pSI=new Int32Array(MAX_P);
-const tBuf=new Float32Array(MAX_P*TMAX*2),tLen=new Uint8Array(MAX_P),tHd=new Uint8Array(MAX_P);
-let pCount=0,pAlive=0;
-
-function pushTrail(i,x,y){const b=i*TMAX*2,s=tHd[i];tBuf[b+s*2]=x;tBuf[b+s*2+1]=y;tHd[i]=(s+1)%TMAX;if(tLen[i]<TMAX)tLen[i]++;}
-function allocP(){if(pAlive>=MAX_P)return-1;for(let i=0;i<pCount;i++)if(pDead[i]){pDead[i]=0;tLen[i]=0;tHd[i]=0;return i;}if(pCount<MAX_P){const i=pCount++;pDead[i]=0;tLen[i]=0;tHd[i]=0;return i;}return-1;}
-
 // ─── GAME STATE ──────────────────────────────────────────────────────────────
 let sectors,activeRevIdx,gameWon,shakeLeft,shakeAmt,time,currentLvl=0,levelPCols=[];
 
@@ -425,15 +418,16 @@ function rebuildPolys(){
   if(!sectors)return;
   const cx=SCX(),cy=SCY();
   for(const s of sectors){s.poly=s.def.pts.map(([rx,ry])=>[cx+rx,cy+ry]);let sx=0,sy=0;for(const[x,y]of s.poly){sx+=x;sy+=y;}s.cx=sx/s.poly.length;s.cy=sy/s.poly.length;}
-  initFlaskInner();
+  initAllFlaskInner();
 }
 
 function setTheme(col){
   document.documentElement.style.setProperty('--hcol',col);
   document.getElementById('progressFill').style.background=`linear-gradient(90deg,${col},#ff00ff)`;
-  const btn=document.getElementById('chargeBtn');
-  btn.style.color=col;btn.style.borderColor=col;btn.style.textShadow=`0 0 10px ${col}`;
+  const b=document.getElementById('chargeBtn');b.style.color=col;b.style.borderColor=col;b.style.textShadow=`0 0 10px ${col}`;
 }
+
+function activeSecIdx(){return LEVELS[currentLvl].reveal[activeRevIdx];}
 
 function updateHUD(){
   const lvl=LEVELS[currentLvl],aidx=activeSecIdx(),active=sectors&&sectors[aidx];
@@ -443,8 +437,6 @@ function updateHUD(){
   document.getElementById('indicators').textContent=LEVELS[currentLvl].reveal.map(idx=>sectors[idx].revealed?'▣':idx===aidx&&!gameWon?'▸':'□').join(' ');
 }
 
-function activeSecIdx(){return LEVELS[currentLvl].reveal[activeRevIdx];}
-
 function initGame(lvlIdx){
   currentLvl=lvlIdx;
   const lvl=LEVELS[lvlIdx];
@@ -452,7 +444,8 @@ function initGame(lvlIdx){
   setTheme(lvl.theme);
   sectors=lvl.sectors.map(def=>({def,fill:0,revealed:false,flash:0,pulse:rand(0,Math.PI*2),innerP:[],rings:[],poly:null,cx:0,cy:0,rgb:hexRGB(def.col)}));
   pDead.fill(1);pCount=0;pAlive=0;tLen.fill(0);tHd.fill(0);
-  activeRevIdx=0;gameWon=false;shakeLeft=0;shakeAmt=0;time=0;autoAccum=0;
+  activeRevIdx=0;gameWon=false;shakeLeft=0;shakeAmt=0;time=0;
+  for(const f of flasks)f.accum=0; // reset accum, keep upgrades
   rebuildPolys();
   document.getElementById('selector').classList.add('hidden');
   document.getElementById('win').classList.remove('show');
@@ -462,74 +455,77 @@ function initGame(lvlIdx){
   updateFlaskUI();updateHUD();
 }
 
-// ─── FLASK INNER PARTICLES ───────────────────────────────────────────────────
-function initFlaskInner(){
-  flaskInnerP=[];
-  const bx=flaskBX(),by=flaskBY();
-  for(let i=0;i<FLASK_INNER_MAX;i++){
-    flaskInnerP.push({x:bx+rand(-FW*.7,FW*.7),y:by-rand(4,FH-4),vx:rand(-.6,.6),vy:rand(-.6,.6),colIdx:Math.floor(rand(0,Math.max(1,levelPCols.length))),sz:rand(1.1,2.2)});
-  }
-}
-
-function updateFlaskInner(dt){
-  const bx=flaskBX(),by=flaskBY();
-  for(const p of flaskInnerP){
-    p.x+=p.vx*dt;p.y+=p.vy*dt;
-    if(p.x<bx-FW+3){p.vx=Math.abs(p.vx);}
-    if(p.x>bx+FW-3){p.vx=-Math.abs(p.vx);}
-    if(p.y<by-FH+3){p.vy=Math.abs(p.vy);}
-    if(p.y>by-3){p.vy=-Math.abs(p.vy);}
-    p.vx+=rand(-.04,.04);p.vy+=rand(-.04,.04);
-    const sp=Math.sqrt(p.vx*p.vx+p.vy*p.vy);if(sp>1.2){p.vx*=1.2/sp;p.vy*=1.2/sp;}
-    if(Math.random()<.004)p.colIdx=Math.floor(rand(0,Math.max(1,levelPCols.length)));
-  }
-  while(flaskInnerP.length<FLASK_INNER_MAX+(flaskLevel*2)){
-    const bx2=flaskBX(),by2=flaskBY();
-    flaskInnerP.push({x:bx2+rand(-FW*.7,FW*.7),y:by2-rand(4,FH-4),vx:rand(-.6,.6),vy:rand(-.6,.6),colIdx:Math.floor(rand(0,Math.max(1,levelPCols.length))),sz:rand(1,2.2)});
-  }
-  if(flaskInnerP.length>FLASK_INNER_MAX+flaskLevel*2)flaskInnerP.length=FLASK_INNER_MAX+flaskLevel*2;
-}
-
 // ─── SPAWN ───────────────────────────────────────────────────────────────────
-function getBtnPos(){const r=document.getElementById('chargeBtn').getBoundingClientRect();return[r.left+r.width*.5,r.top+r.height*.5];}
-
-function spawnBurst(n,fromX,fromY){
+function spawnBurst(n,fx,fy){
   if(gameWon||!sectors||activeRevIdx>=LEVELS[currentLvl].reveal.length)return;
   const sec=sectors[activeSecIdx()],{cx,cy}=sec;
   for(let k=0;k<n;k++){
     const i=allocP();if(i<0)break;pAlive++;
-    const tx=cx+rand(-42,42),ty=cy+rand(-28,28),mx=(fromX+tx)*.5,my=(fromY+ty)*.5;
-    pSX[i]=fromX+rand(-18,18);pSY[i]=fromY+rand(-8,8);
+    const tx=cx+rand(-42,42),ty=cy+rand(-28,28),mx=(fx+tx)*.5,my=(fy+ty)*.5;
+    pSX[i]=fx+rand(-14,14);pSY[i]=fy+rand(-6,6);
     pX[i]=pSX[i];pY[i]=pSY[i];pTX[i]=tx;pTY[i]=ty;
-    pCPX[i]=mx+rand(-200,200);pCPY[i]=my-rand(90,220);
-    pT[i]=0;pSpd[i]=rand(.011,.025);pSZ[i]=rand(1.2,2.8);
+    pCPX[i]=mx+rand(-200,200);pCPY[i]=my-rand(80,210);
+    pT[i]=0;pSpd[i]=rand(.011,.025);pSZ[i]=rand(1.1,2.6);
     pCI[i]=Math.floor(rand(0,Math.max(1,levelPCols.length)));pSI[i]=activeSecIdx();pDead[i]=0;
   }
 }
 
-function spawnFromFlask(n){
-  flaskEmitGlow=1;
-  spawnBurst(n,flaskBX(),flaskTopY());
-}
-
+// Auto-spawn: all flasks update independently
 function updateAutoSpawn(dt,ts){
   if(gameWon||!sectors)return;
-  const rate=FLASK_UPS[flaskLevel].rate;
-  autoAccum+=(rate*dt)/60;
-  const n=Math.floor(autoAccum);
-  if(n>0){autoAccum-=n;spawnFromFlask(n);soundAutoTick(ts);}
+  for(let i=0;i<flasks.length;i++){
+    const f=flasks[i];
+    f.accum+=(FLASK_UPS[f.level].rate*dt)/60;
+    const n=Math.floor(f.accum);
+    if(n>0){
+      f.accum-=n;f.emitGlow=1;
+      spawnBurst(n,flaskCX(i),flaskTopY());
+      if(i===0)sndAutoTick(ts);
+    }
+  }
 }
 
-// ─── BUTTON HOLD ─────────────────────────────────────────────────────────────
-const btn=document.getElementById('chargeBtn');
+// ─── BUTTON — halved burst sizes ─────────────────────────────────────────────
+const chgBtn=document.getElementById('chargeBtn');
 let holdActive=false,holdTO=null,holdRate=80;
-function startHold(){if(gameWon)return;initAudio();const[bx,by]=getBtnPos();spawnBurst(18,bx,by);soundSpawnClick();btn.classList.add('active');holdActive=true;holdRate=80;(function lp(){if(!holdActive)return;if(!gameWon){const[bx2,by2]=getBtnPos();spawnBurst(14,bx2,by2);}holdRate=Math.max(38,holdRate-1.5);holdTO=setTimeout(lp,holdRate);})();}
-function stopHold(){holdActive=false;btn.classList.remove('active');if(holdTO){clearTimeout(holdTO);holdTO=null;}}
-btn.addEventListener('mousedown',startHold);
-btn.addEventListener('mouseup',stopHold);
-btn.addEventListener('mouseleave',stopHold);
-btn.addEventListener('touchstart',e=>{e.preventDefault();startHold();},{passive:false});
-btn.addEventListener('touchend',stopHold);
+function startHold(){
+  if(gameWon)return;initAudio();
+  const[bx,by]=getBtnPos();
+  spawnBurst(9,bx,by);sndClick();       // ← was 18, now 9
+  chgBtn.classList.add('active');holdActive=true;holdRate=80;
+  (function lp(){
+    if(!holdActive)return;
+    if(!gameWon){const[bx2,by2]=getBtnPos();spawnBurst(7,bx2,by2);}  // ← was 14, now 7
+    holdRate=Math.max(38,holdRate-1.5);holdTO=setTimeout(lp,holdRate);
+  })();
+}
+function stopHold(){holdActive=false;chgBtn.classList.remove('active');if(holdTO){clearTimeout(holdTO);holdTO=null;}}
+function getBtnPos(){const r=chgBtn.getBoundingClientRect();return[r.left+r.width*.5,r.top+r.height*.5];}
+chgBtn.addEventListener('mousedown',startHold);chgBtn.addEventListener('mouseup',stopHold);chgBtn.addEventListener('mouseleave',stopHold);
+chgBtn.addEventListener('touchstart',e=>{e.preventDefault();startHold();},{passive:false});chgBtn.addEventListener('touchend',stopHold);
+
+// ─── CANVAS INTERACTIONS (flask upgrade + cursor) ─────────────────────────────
+canvas.addEventListener('mousemove',e=>{
+  if(!sectors){canvas.style.cursor='default';return;}
+  const r=canvas.getBoundingClientRect();
+  const mx=(e.clientX-r.left)*(W/r.width),my=(e.clientY-r.top)*(H/r.height);
+  const by=flaskBY(),topY=flaskTopY();
+  let over=false;
+  for(let i=0;i<flasks.length;i++){const bx=flaskCX(i);if(mx>bx-FW-10&&mx<bx+FW+10&&my>topY-10&&my<by+10){over=true;break;}}
+  canvas.style.cursor=over?'pointer':'default';
+});
+
+canvas.addEventListener('click',e=>{
+  initAudio();
+  if(!sectors)return;
+  const r=canvas.getBoundingClientRect();
+  const mx=(e.clientX-r.left)*(W/r.width),my=(e.clientY-r.top)*(H/r.height);
+  const by=flaskBY(),topY=flaskTopY();
+  for(let i=0;i<flasks.length;i++){
+    const bx=flaskCX(i);
+    if(mx>bx-FW-10&&mx<bx+FW+10&&my>topY-10&&my<by+10){upgradeFlask(i);return;}
+  }
+});
 
 // ─── REVEAL ──────────────────────────────────────────────────────────────────
 const MAX_INNER=18;
@@ -540,7 +536,7 @@ function revealSector(sIdx){
   for(let k=0;k<55;k++){const ang=rand(0,Math.PI*2),spd=rand(1.5,6);sec.innerP.push({x:cx,y:cy,vx:Math.cos(ang)*spd,vy:Math.sin(ang)*spd,colIdx:Math.floor(rand(0,Math.max(1,levelPCols.length))),sz:rand(1,3.5),life:1});}
   sec.rings=[{r:0,a:1},{r:0,a:.6,d:10},{r:0,a:.4,d:20}];
   awardStars(STARS_PER_REVEAL,cx,cy-20);
-  soundReveal(activeRevIdx);
+  sndReveal(activeRevIdx);
   activeRevIdx=Math.min(activeRevIdx+1,LEVELS[currentLvl].reveal.length);
   if(activeRevIdx>=LEVELS[currentLvl].reveal.length){
     gameWon=true;markDone(currentLvl);
@@ -561,13 +557,8 @@ function renderPreview(cv,defs,theme){
   for(const d of defs)for(const[px,py]of d.pts){mnX=Math.min(mnX,px);mxX=Math.max(mxX,px);mnY=Math.min(mnY,py);mxY=Math.max(mxY,py);}
   const sw=mxX-mnX||1,sh=mxY-mnY||1,sc=Math.min((cv.width-6)/sw,(cv.height-6)/sh);
   const ox=cv.width*.5-(mnX+mxX)*.5*sc,oy=cv.height*.5-(mnY+mxY)*.5*sc;
-  for(const d of defs){
-    c2.beginPath();c2.moveTo(d.pts[0][0]*sc+ox,d.pts[0][1]*sc+oy);
-    for(let j=1;j<d.pts.length;j++)c2.lineTo(d.pts[j][0]*sc+ox,d.pts[j][1]*sc+oy);
-    c2.closePath();c2.strokeStyle=d.col;c2.lineWidth=.85;c2.globalAlpha=.65;c2.stroke();
-  }
+  for(const d of defs){c2.beginPath();c2.moveTo(d.pts[0][0]*sc+ox,d.pts[0][1]*sc+oy);for(let j=1;j<d.pts.length;j++)c2.lineTo(d.pts[j][0]*sc+ox,d.pts[j][1]*sc+oy);c2.closePath();c2.strokeStyle=d.col;c2.lineWidth=.85;c2.globalAlpha=.65;c2.stroke();}
 }
-
 function buildSelectorCards(){
   const grid=document.getElementById('sel-grid');grid.innerHTML='';
   LEVELS.forEach((lvl,i)=>{
@@ -581,7 +572,6 @@ function buildSelectorCards(){
     grid.appendChild(card);
   });
 }
-
 function showSelector(){
   document.getElementById('selector').classList.remove('hidden');
   document.getElementById('win').classList.remove('show');
@@ -591,70 +581,95 @@ function showSelector(){
 }
 function nextLevel(){const n=currentLvl+1;if(n<LEVELS.length)initGame(n);else showSelector();}
 
-// ─── DRAW FLASK ───────────────────────────────────────────────────────────────
-function drawFlask(dt){
-  const bx=flaskBX(),by=flaskBY();
-  const topY=by-FH-FNH;
-  if(flaskFlash>0)flaskFlash=Math.max(0,flaskFlash-.025*dt);
-  if(flaskEmitGlow>0)flaskEmitGlow=Math.max(0,flaskEmitGlow-.08*dt);
+// ─── DRAW FLASK ROW ───────────────────────────────────────────────────────────
+function drawAllFlasks(dt){
+  const by=flaskBY(),topY=flaskTopY();
 
-  const fCol=FLASK_COLS[flaskLevel];
-  const[fr,fg,fb]=hexRGB(fCol);
-  const fl=flaskFlash;
+  for(let i=0;i<flasks.length;i++){
+    const f=flasks[i];
+    const bx=flaskCX(i);
+    if(f.flash>0)f.flash=Math.max(0,f.flash-.025*dt);
+    if(f.emitGlow>0)f.emitGlow=Math.max(0,f.emitGlow-.08*dt);
+    f.pulse+=.022*dt;
 
-  updateFlaskInner(dt);
+    updateFlaskInner(i,dt);
 
-  ctx.save();
+    const fCol=FLASK_COLS[f.level];
+    const[fr,fg,fb]=hexRGB(fCol);
+    const pN=(Math.sin(f.pulse)+1)*.5;
+    const fl=f.flash;
 
-  // Build flask path
-  ctx.beginPath();
-  ctx.moveTo(bx-FW,by);ctx.lineTo(bx+FW,by);
-  ctx.lineTo(bx+FW,by-FH);ctx.lineTo(bx+FNW,by-FH);
-  ctx.lineTo(bx+FNW,topY);ctx.lineTo(bx-FNW,topY);
-  ctx.lineTo(bx-FNW,by-FH);ctx.lineTo(bx-FW,by-FH);
-  ctx.closePath();
+    ctx.save();
 
-  // Liquid fill (bottom 68%)
-  const liquidY=by-FH*.68;
-  ctx.save();ctx.clip();
-  ctx.fillStyle=`rgba(${fr},${fg},${fb},${.10+fl*.25})`;
-  ctx.fillRect(bx-FW,liquidY,FW*2,by-liquidY);
-  // Animated liquid shimmer
-  const shimA=Math.sin(time*.08)*.5+.5;
-  ctx.fillStyle=`rgba(${fr},${fg},${fb},${.04+shimA*.04})`;
-  ctx.fillRect(bx-FW,liquidY-6,FW*2,10);
-  ctx.restore();
+    // Flask polygon path
+    ctx.beginPath();
+    ctx.moveTo(bx-FW,by);   ctx.lineTo(bx+FW,by);
+    ctx.lineTo(bx+FW,by-FH);ctx.lineTo(bx+FNW,by-FH);
+    ctx.lineTo(bx+FNW,topY);ctx.lineTo(bx-FNW,topY);
+    ctx.lineTo(bx-FNW,by-FH);ctx.lineTo(bx-FW,by-FH);
+    ctx.closePath();
 
-  // Glow halo
-  ctx.strokeStyle=`rgba(${fr},${fg},${fb},${.1+fl*.15})`;ctx.lineWidth=10+fl*6;ctx.stroke();
-  // Main border
-  ctx.strokeStyle=`rgba(${fr},${fg},${fb},${.65+fl*.35})`;ctx.lineWidth=1.5;ctx.stroke();
+    // Animated liquid fill
+    const liqY=by-FH*(.38+pN*.18);
+    ctx.save();ctx.clip();
+    ctx.fillStyle=`rgba(${fr},${fg},${fb},${.07+fl*.2})`;
+    ctx.fillRect(bx-FW,liqY,FW*2,by-liqY);
+    // Shimmer line
+    ctx.fillStyle=`rgba(${fr},${fg},${fb},${.04+pN*.04})`;
+    ctx.fillRect(bx-FW,liqY-4,FW*2,7);
+    ctx.restore();
 
-  // Level label badge at flask base
-  ctx.font=`bold 7px Orbitron,monospace`;ctx.textAlign='center';
-  ctx.fillStyle=`rgba(${fr},${fg},${fb},.6)`;
-  ctx.fillText(FLASK_UPS[flaskLevel].name,bx,by+13);
+    // Glow halo (wide + faint)
+    ctx.strokeStyle=`rgba(${fr},${fg},${fb},${.09+fl*.14})`;ctx.lineWidth=8+fl*5;ctx.stroke();
+    // Crisp border
+    ctx.strokeStyle=`rgba(${fr},${fg},${fb},${.62+fl*.35})`;ctx.lineWidth=1.2;ctx.stroke();
 
-  // Neck opening emit glow
-  if(flaskEmitGlow>0){
-    ctx.globalCompositeOperation='lighter';
-    ctx.globalAlpha=flaskEmitGlow*.5;
-    ctx.fillStyle=`rgba(${fr},${fg},${fb},1)`;
-    ctx.beginPath();ctx.arc(bx,topY,FNW*1.5,0,Math.PI*2);ctx.fill();
-    ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;
+    // Level number inside
+    ctx.font='bold 7px Orbitron,monospace';ctx.textAlign='center';
+    ctx.fillStyle=`rgba(${fr},${fg},${fb},.8)`;
+    ctx.fillText(`${f.level+1}`,bx,by-FH*.35+3);
+
+    // Emit glow at neck opening
+    if(f.emitGlow>0){
+      ctx.globalCompositeOperation='lighter';ctx.globalAlpha=f.emitGlow*.38;
+      ctx.fillStyle=`rgba(${fr},${fg},${fb},1)`;
+      ctx.beginPath();ctx.arc(bx,topY,FNW*2,0,Math.PI*2);ctx.fill();
+      ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;
+    }
+
+    // Inner particles
+    if(f.innerP.length>0){
+      ctx.globalCompositeOperation='lighter';
+      for(const p of f.innerP){
+        const pc=levelPCols[p.colIdx]||[fr,fg,fb];const[pr,pg,pb]=pc;
+        ctx.globalAlpha=.32;ctx.fillStyle=`rgba(${pr},${pg},${pb},1)`;
+        ctx.beginPath();ctx.arc(p.x,p.y,p.sz*1.9,0,Math.PI*2);ctx.fill();
+        ctx.globalAlpha=.72;ctx.beginPath();ctx.arc(p.x,p.y,p.sz,0,Math.PI*2);ctx.fill();
+      }
+      ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;
+    }
+
+    ctx.restore();
   }
 
-  // Flask inner particles
-  ctx.globalCompositeOperation='lighter';
-  for(const p of flaskInnerP){
-    const col=levelPCols[p.colIdx]||[fr,fg,fb];
-    const[pr,pg,pb]=col;
-    ctx.globalAlpha=.4;ctx.fillStyle=`rgba(${pr},${pg},${pb},1)`;
-    ctx.beginPath();ctx.arc(p.x,p.y,p.sz*2.2,0,Math.PI*2);ctx.fill();
-    ctx.globalAlpha=.85;ctx.beginPath();ctx.arc(p.x,p.y,p.sz,0,Math.PI*2);ctx.fill();
+  // Upgrade cost labels beneath each flask (drawn after all flasks)
+  ctx.textAlign='center';
+  for(let i=0;i<flasks.length;i++){
+    const f=flasks[i],bx=flaskCX(i);
+    const curr=FLASK_UPS[f.level];
+    if(curr.nextCost){
+      const canAfford=stars>=curr.nextCost;
+      ctx.font='bold 6px Orbitron,monospace';
+      ctx.fillStyle=canAfford?'#ffdd44':'rgba(140,120,50,.4)';
+      if(canAfford){ctx.shadowColor='#ffdd44';ctx.shadowBlur=5;}
+      ctx.fillText(`${curr.nextCost}⭐`,bx,by+14);
+      ctx.shadowBlur=0;
+    }else{
+      ctx.font='bold 5px Orbitron,monospace';
+      ctx.fillStyle=FLASK_COLS[f.level];
+      ctx.fillText('MAX',bx,by+14);
+    }
   }
-  ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;
-  ctx.restore();
 }
 
 // ─── MAIN LOOP ────────────────────────────────────────────────────────────────
@@ -711,7 +726,7 @@ function drawParticles(dt){
     if(pT[i]>=1){
       const sIdx=pSI[i],sec=sectors&&sectors[sIdx];
       if(sec&&!sec.revealed){
-        sec.fill=Math.min(1,sec.fill+rand(.016,.026));
+        sec.fill=Math.min(1,sec.fill+rand(.015,.025));
         if(sec.innerP.length<MAX_INNER){const ang=rand(0,Math.PI*2);sec.innerP.push({x:pTX[i],y:pTY[i],vx:Math.cos(ang)*rand(.8,2.5),vy:Math.sin(ang)*rand(.8,2.5),colIdx:pCI[i],sz:pSZ[i]*.85,life:rand(.7,1)});}
         if(sec.fill>=1)revealSector(sIdx);
       }
@@ -721,12 +736,12 @@ function drawParticles(dt){
     const nx=mt*mt*pSX[i]+2*mt*t*pCPX[i]+t*t*pTX[i];
     const ny=mt*mt*pSY[i]+2*mt*t*pCPY[i]+t*t*pTY[i];
     pX[i]=nx;pY[i]=ny;pushTrail(i,nx,ny);
-    const col=levelPCols[pCI[i]]||[255,255,255];const[pr,pg,pb]=col;const sz=pSZ[i];
+    const[pr,pg,pb]=levelPCols[pCI[i]]||[255,255,255];const sz=pSZ[i];
     const tl=tLen[i],hd=tHd[i],base=i*TMAX*2;
     if(tl>1){ctx.globalAlpha=.55;ctx.strokeStyle=`rgba(${pr},${pg},${pb},1)`;ctx.lineWidth=sz*.85;ctx.beginPath();const old=(hd-tl+TMAX)%TMAX;ctx.moveTo(tBuf[base+old*2],tBuf[base+old*2+1]);for(let j=1;j<tl;j++){const idx=(old+j)%TMAX;ctx.lineTo(tBuf[base+idx*2],tBuf[base+idx*2+1]);}ctx.stroke();}
     ctx.globalAlpha=.28;ctx.fillStyle=`rgba(${pr},${pg},${pb},1)`;ctx.beginPath();ctx.arc(nx,ny,sz*3.2,0,Math.PI*2);ctx.fill();
     ctx.globalAlpha=.65;ctx.beginPath();ctx.arc(nx,ny,sz*1.5,0,Math.PI*2);ctx.fill();
-    ctx.globalAlpha=1;ctx.fillStyle='rgba(255,255,255,.92)';ctx.beginPath();ctx.arc(nx,ny,sz*.5,0,Math.PI*2);ctx.fill();
+    ctx.globalAlpha=1;ctx.fillStyle='rgba(255,255,255,.9)';ctx.beginPath();ctx.arc(nx,ny,sz*.5,0,Math.PI*2);ctx.fill();
   }
   ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;
 }
@@ -735,12 +750,10 @@ function drawFloatTexts(dt){
   if(!floatTexts.length)return;
   ctx.textAlign='center';
   for(let i=floatTexts.length-1;i>=0;i--){
-    const f=floatTexts[i];f.y+=f.vy*dt;f.alpha-=.02*dt;
+    const f=floatTexts[i];f.y+=f.vy*dt;f.alpha-=.022*dt;
     if(f.alpha<=0){floatTexts.splice(i,1);continue;}
-    ctx.globalAlpha=f.alpha;
-    ctx.shadowColor=f.col;ctx.shadowBlur=8;
-    ctx.fillStyle=f.col;ctx.font='bold 13px Orbitron,monospace';
-    ctx.fillText(f.text,f.x,f.y);
+    ctx.globalAlpha=f.alpha;ctx.shadowColor=f.col;ctx.shadowBlur=8;
+    ctx.fillStyle=f.col;ctx.font='bold 13px Orbitron,monospace';ctx.fillText(f.text,f.x,f.y);
   }
   ctx.globalAlpha=1;ctx.shadowBlur=0;
 }
@@ -749,10 +762,10 @@ let last=0;
 function loop(ts){
   requestAnimationFrame(loop);
   const dt=Math.min((ts-last)/16.667,3);last=ts;time+=dt;
-  // BG
+
   ctx.fillStyle='#000d20';ctx.fillRect(0,0,W,H);
   const ng=ctx.createRadialGradient(SCX(),SCY()-20,0,SCX(),SCY()-20,200);
-  ng.addColorStop(0,'rgba(8,35,80,.16)');ng.addColorStop(1,'rgba(0,0,0,0)');
+  ng.addColorStop(0,'rgba(8,35,80,.15)');ng.addColorStop(1,'rgba(0,0,0,0)');
   ctx.fillStyle=ng;ctx.fillRect(0,0,W,H);
 
   let ox=0,oy=0;
@@ -764,7 +777,7 @@ function loop(ts){
   ctx.globalAlpha=1;
 
   drawShip(dt);
-  if(sectors){drawFlask(dt);updateAutoSpawn(dt,ts);}
+  if(sectors){drawAllFlasks(dt);updateAutoSpawn(dt,ts);}
   drawParticles(dt);
   drawFloatTexts(dt);
 
